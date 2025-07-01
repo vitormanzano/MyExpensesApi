@@ -1,0 +1,25 @@
+name: MyExpenses
+
+volumes:
+  my_expenses_data:
+
+services:
+  postgres:
+    container_name: MyExpenses
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: Expenses
+    ports:
+      - "5432:5432"
+    volumes:
+      - my_expenses_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      
+      
+    
