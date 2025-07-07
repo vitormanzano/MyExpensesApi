@@ -21,7 +21,6 @@ namespace MyExpenses.ValueObjects
         public void SetPassword(string passwordValue)
         {
             ValidatePassword(passwordValue);
-
             PasswordValue = EncryptPassword(passwordValue);
         }
 
