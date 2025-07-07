@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MyExpenses.Data;
+using MyExpenses.Repository.User;
+using MyExpenses.Services.User;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseNpgsql(connectionString: builder.Configuration.GetConnectionString("PostgresConnection"));
 });
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
