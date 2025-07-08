@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyExpenses.Dtos.User;
+using MyExpenses.Services.Exceptions;
 using MyExpenses.Services.User;
 
 namespace MyExpenses.Controllers
@@ -27,6 +28,26 @@ namespace MyExpenses.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("FindByEmail/{email}")]
+        public async Task<IActionResult> FindUserByEmail(string email)
+        {
+            try
+            {
+                var user = await _userService.FindUserByEmail(email);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                switch (ex)
+                {
+                    case NotFoundException:
+                        return NotFound(ex.Message);
+                    default:
+                        return BadRequest();
+                }
             }
         }
     }

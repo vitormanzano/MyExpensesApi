@@ -5,4 +5,5 @@ namespace MyExpenses.Repository.User;
 public interface IUserRepository
 {
     Task SignUpUser(UserModel user);
+    Task<UserModel> FindUserByEmail(string email);
 }

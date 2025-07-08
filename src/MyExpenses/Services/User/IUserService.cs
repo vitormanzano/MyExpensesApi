@@ -5,4 +5,5 @@ namespace MyExpenses.Services.User;
 public interface IUserService
 {
     Task SignUp(SignUpUserDto signUpUserDto);
+    Task<ResponseUserDto> FindUserByEmail(string email);
 }

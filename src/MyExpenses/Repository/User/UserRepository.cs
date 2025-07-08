@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using MyExpenses.Data;
 using MyExpenses.Models;
 
@@ -17,4 +18,13 @@ public class UserRepository : IUserRepository
         _context.Users.Add(user);
         return _context.SaveChangesAsync();
     }
+
+    public async Task<UserModel> FindUserByEmail(string email)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(email));
+
+        return user;
+    }
+
+
 }
