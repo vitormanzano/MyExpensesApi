@@ -5,13 +5,15 @@ namespace MyExpenses.ValueObjects
 {
     public class PasswordVO
     {
-        public string PasswordValue { get; set; }
+        public string PasswordValue { get; private set; }
 
         private const int SaltSize = 16;
         private const int HashSize = 32;
         private const int Iterations = 100000;
 
         private static readonly HashAlgorithmName Algorithm = HashAlgorithmName.SHA512;
+
+        protected PasswordVO() { }
 
         public PasswordVO(string passwordValue)
         {
@@ -52,7 +54,7 @@ namespace MyExpenses.ValueObjects
 
             byte[] inputHash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, Algorithm, HashSize);
 
-            return hash.SequenceEqual(inputHash);
+            return CryptographicOperations.FixedTimeEquals(hash, inputHash);
         }
     }
 }

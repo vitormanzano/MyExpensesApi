@@ -4,7 +4,9 @@ namespace MyExpenses.ValueObjects
 {
     public class EmailVO
     {
-        public string EmailAddress { get; set; }
+        public string EmailAddress { get; private set; }
+
+        protected EmailVO() { }
 
         public EmailVO(string emailAddress )
         {
