@@ -5,10 +5,10 @@ namespace MyExpenses.Models
 {
     public class UserModel
     {
-        public Guid Id { get; set; }
-        public string Cpf { get; set; }
-        public EmailVO Email { get; set; }
-        public PasswordVO Password { get; set; }
+        public Guid Id { get; private set; }
+        public string Cpf { get; private set; }
+        public EmailVO Email { get; private set; }
+        public PasswordVO Password { get; private set; }
         public List<ExpenseModel> Expenses { get; set; } = new List<ExpenseModel>();
         public List<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
         

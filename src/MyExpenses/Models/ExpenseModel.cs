@@ -2,13 +2,13 @@
 {
     public class ExpenseModel
     {
-        public Guid Id { get; set; }
-        public decimal Value { get; set; }
-        public DateOnly Date {  get; set; }
-        public Guid UserId { get; set; }
-        public UserModel User { get; set; }
-        public Guid CategoryId { get; set; }
-        public CategoryModel Category { get; set; }
+        public Guid Id { get; private set; }
+        public decimal Value { get; private set; }
+        public DateOnly Date {  get; private set; }
+        public Guid UserId { get; private set; }
+        public UserModel User { get; }
+        public Guid CategoryId { get; private set; }
+        public CategoryModel Category { get; }
 
         protected ExpenseModel() { }
 
