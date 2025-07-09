@@ -9,6 +9,8 @@ using MyExpenses.ServicesExtensions;
 using MyExpenses.Jwt;
 using MyExpenses.Repository.Category;
 using MyExpenses.Services.Category;
+using MyExpenses.Repository.Expense;
+using MyExpenses.Services.Expense;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +46,9 @@ builder.Services.AddSingleton<TokenProvider>();
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
 
 var app = builder.Build();
 
