@@ -7,6 +7,8 @@ using MyExpenses.Repository.User;
 using MyExpenses.Services.User;
 using MyExpenses.ServicesExtensions;
 using MyExpenses.Jwt;
+using MyExpenses.Repository.Category;
+using MyExpenses.Services.Category;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +41,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddSingleton<TokenProvider>();
+
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 var app = builder.Build();
 
