@@ -6,4 +6,7 @@ public interface IUserRepository
 {
     Task SignUpUser(UserModel user);
     Task<UserModel> FindUserByEmail(string email);
+    Task<UserModel> FindUserByCpf(string cpf);
+    Task<UserModel> UpdateUser(UserModel user);
+    Task DeleteUser(UserModel user);
 }

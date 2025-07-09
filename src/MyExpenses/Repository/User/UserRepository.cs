@@ -21,10 +21,27 @@ public class UserRepository : IUserRepository
 
     public async Task<UserModel> FindUserByEmail(string email)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(email));
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.EmailAddress.Equals(email));
+        return user;
+    }
+
+    public async Task<UserModel> FindUserByCpf(string cpf)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Cpf.Equals(cpf));
+        return user;
+    }
+
+    public async Task<UserModel> UpdateUser(UserModel user)
+    {
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
 
         return user;
     }
 
-
+    public async Task DeleteUser(UserModel user)
+    {
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
+    }
 }

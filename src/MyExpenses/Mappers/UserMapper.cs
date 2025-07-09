@@ -10,8 +10,7 @@ namespace MyExpenses.Mappers
             var userResponse = new ResponseUserDto(
                 user.Id,
                 user.Cpf,
-                user.Email.EmailAddress, //Email and password are value objects in UserModel, so we go in the class Email to get the value
-                user.Password.PasswordValue);
+                user.Email.EmailAddress); //Email is a value object in UserModel, so we go in the class Email to get the value
 
             return userResponse;
         }
