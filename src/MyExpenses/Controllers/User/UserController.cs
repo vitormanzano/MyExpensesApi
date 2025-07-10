@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyExpenses.Dtos.User;
@@ -31,6 +32,7 @@ namespace MyExpenses.Controllers.User
             }
         }
 
+        [Authorize]
         [HttpGet("FindByEmail/{email}")]
         public async Task<IActionResult> FindUserByEmail(string email)
         {
@@ -41,16 +43,16 @@ namespace MyExpenses.Controllers.User
             }
             catch (Exception ex)
             {
-                switch (ex)
+                return ex switch
                 {
-                    case NotFoundException:
-                        return NotFound(ex.Message);
-                    default:
-                        return BadRequest(ex.Message);
-                }
+                    NotFoundException => NotFound(ex.Message),
+                    UnauthorizedAccessException => Unauthorized(ex.Message),
+                    _ => BadRequest(ex.Message),
+                };
             }
         }
 
+        [Authorize]
         [HttpGet("FindByCpf/{cpf}")]
         public async Task<IActionResult> FindUserByCpf(string cpf)
         {
@@ -61,13 +63,12 @@ namespace MyExpenses.Controllers.User
             }
             catch (Exception ex)
             {
-                switch (ex)
+                return ex switch
                 {
-                    case NotFoundException:
-                        return NotFound(ex.Message);
-                    default:
-                        return BadRequest(ex.Message);
-                }
+                    NotFoundException => NotFound(ex.Message),
+                    UnauthorizedAccessException => Unauthorized(ex.Message),
+                    _ => BadRequest(ex.Message),
+                };
             }
         }
 
@@ -77,7 +78,7 @@ namespace MyExpenses.Controllers.User
             try
             {
                 var token = await _userService.Login(loginUserDto);
-                return Ok(token);
+                return Ok("Token: " + token);
             }
             catch (Exception ex)
             {
@@ -85,6 +86,7 @@ namespace MyExpenses.Controllers.User
             }
         }
 
+        [Authorize]
         [HttpPatch("Update/{cpf}")]
         public async Task<IActionResult> Update([FromBody] UpdateUserDto updateUserDto, string cpf)
         {
@@ -95,10 +97,15 @@ namespace MyExpenses.Controllers.User
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return ex switch
+                {
+                    UnauthorizedAccessException => Unauthorized(ex.Message),
+                    _ => BadRequest(ex.Message),
+                };
             }
         }
 
+        [Authorize]
         [HttpDelete("Delete/{email}")]
         public async Task<IActionResult> Delete(string email)
         {
@@ -109,13 +116,11 @@ namespace MyExpenses.Controllers.User
             }
             catch (Exception ex)
             {
-                switch (ex)
+                return ex switch
                 {
-                    case NotFoundException:
-                        return NotFound(ex.Message);
-                    default:
-                        return BadRequest(ex.Message);
-                }
+                    NotFoundException => NotFound(ex.Message),
+                    _ => BadRequest(ex.Message),
+                };
             }
         }
     }
