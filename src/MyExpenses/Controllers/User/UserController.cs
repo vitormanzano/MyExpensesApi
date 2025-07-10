@@ -9,21 +9,14 @@ namespace MyExpenses.Controllers.User
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController(IUserService userService) : ControllerBase
     {
-        private readonly IUserService _userService;
-
-        public UserController(IUserService userService)
-        {
-            _userService = userService;
-        }
-        
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUp([FromBody] SignUpUserDto user)
         {
             try
             {
-                await _userService.SignUp(user);
+                await userService.SignUp(user);
                 return Created();
             }
             catch (Exception ex)
@@ -38,7 +31,7 @@ namespace MyExpenses.Controllers.User
         {
             try
             {
-                var user = await _userService.FindUserByEmail(email);
+                var user = await userService.FindUserByEmail(email);
                 return Ok(user);
             }
             catch (Exception ex)
@@ -58,7 +51,7 @@ namespace MyExpenses.Controllers.User
         {
             try
             {
-                var user = await _userService.FindUserByCpf(cpf);
+                var user = await userService.FindUserByCpf(cpf);
                 return Ok(user);
             }
             catch (Exception ex)
@@ -77,7 +70,7 @@ namespace MyExpenses.Controllers.User
         {
             try
             {
-                var token = await _userService.Login(loginUserDto);
+                var token = await userService.Login(loginUserDto);
                 return Ok("Token: " + token);
             }
             catch (Exception ex)
@@ -92,7 +85,7 @@ namespace MyExpenses.Controllers.User
         {
             try
             {
-                var user = await _userService.UpdateUserByCpf(updateUserDto, cpf);
+                var user = await userService.UpdateUserByCpf(updateUserDto, cpf);
                 return Ok(user);
             }
             catch (Exception ex)
@@ -111,7 +104,7 @@ namespace MyExpenses.Controllers.User
         {
             try
             {
-                await _userService.DeleteUserByEmail(email);
+                await userService.DeleteUserByEmail(email);
                 return Ok("User deleted!");
             }
             catch (Exception ex)
@@ -119,6 +112,7 @@ namespace MyExpenses.Controllers.User
                 return ex switch
                 {
                     NotFoundException => NotFound(ex.Message),
+                    UnauthorizedAccessException => Unauthorized(ex.Message),
                     _ => BadRequest(ex.Message),
                 };
             }
