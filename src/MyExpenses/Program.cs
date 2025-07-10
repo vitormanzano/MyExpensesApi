@@ -11,6 +11,7 @@ using MyExpenses.Repository.Category;
 using MyExpenses.Services.Category;
 using MyExpenses.Repository.Expense;
 using MyExpenses.Services.Expense;
+using MyExpenses.UserContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserContext, UserContext>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();

@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using MyExpenses.Dtos.User;
 using MyExpenses.Services.Exceptions;
 using MyExpenses.Services.User;
+using MyExpenses.UserContext;
 
 namespace MyExpenses.Controllers.User
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController(IUserService userService) : ControllerBase
+    public class UserController(IUserService userService, IUserContext userContext) : ControllerBase
     {
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUp([FromBody] SignUpUserDto user)
@@ -80,12 +81,14 @@ namespace MyExpenses.Controllers.User
         }
 
         [Authorize]
-        [HttpPatch("Update/{cpf}")]
-        public async Task<IActionResult> Update([FromBody] UpdateUserDto updateUserDto, string cpf)
+        [HttpPatch("Update")]
+        public async Task<IActionResult> Update([FromBody] UpdateUserDto updateUserDto)
         {
             try
             {
-                var user = await userService.UpdateUserByCpf(updateUserDto, cpf);
+                var userId = userContext.UserId;
+
+                var user = await userService.UpdateUserByGuid(updateUserDto, userId);
                 return Ok(user);
             }
             catch (Exception ex)
@@ -99,12 +102,14 @@ namespace MyExpenses.Controllers.User
         }
 
         [Authorize]
-        [HttpDelete("Delete/{email}")]
-        public async Task<IActionResult> Delete(string email)
+        [HttpDelete("Delete/{password}")]
+        public async Task<IActionResult> Delete(string password)
         {
             try
             {
-                await userService.DeleteUserByEmail(email);
+                var userId = userContext.UserId;
+
+                await userService.DeleteUser(password, userId);
                 return Ok("User deleted!");
             }
             catch (Exception ex)

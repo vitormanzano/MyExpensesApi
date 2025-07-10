@@ -7,25 +7,16 @@ using MyExpenses.Services.Exceptions;
 
 namespace MyExpenses.Services.User;
 
-public class UserService : IUserService
+public class UserService(IUserRepository userRepository, TokenProvider tokenProvider) : IUserService
 {
-    private readonly IUserRepository _userRepository;
-    private readonly TokenProvider _tokenProvider;
-
-    public UserService(IUserRepository userRepository, TokenProvider tokenProvider)
-    {
-        _userRepository = userRepository;
-        _tokenProvider = tokenProvider;
-    }
-
     public async Task SignUp(SignUpUserDto signUpUserDto)
     {
-        var userWithEmail = await _userRepository.FindUserByEmail(signUpUserDto.Email);
+        var userWithEmail = await userRepository.FindUserByEmail(signUpUserDto.Email);
 
         if (userWithEmail is not null)
             throw new Exception("A user with this email already exists!");
 
-        var userWithCpf = await _userRepository.FindUserByCpf(signUpUserDto.Cpf);
+        var userWithCpf = await userRepository.FindUserByCpf(signUpUserDto.Cpf);
 
         if (userWithCpf is not null)
             throw new Exception("A user with this cpf already exists!");
@@ -35,26 +26,26 @@ public class UserService : IUserService
             signUpUserDto.Email,
             signUpUserDto.Password);
 
-        await _userRepository.SignUpUser(user);
+        await userRepository.SignUpUser(user);
     }
 
     public async Task<string> Login(LoginUserDto loginUserDto)
     {
-        var user = await _userRepository.FindUserByEmail(loginUserDto.Email) ?? throw new NotFoundException("User not found!");
+        var user = await userRepository.FindUserByEmail(loginUserDto.Email) ?? throw new NotFoundException("User not found!");
 
         var passwordMatches = user.Password.Verify(loginUserDto.Password, user.Password.PasswordValue);
 
         if (!passwordMatches)
             throw new Exception("Wrong Password!");
 
-        var token = _tokenProvider.Create(user);
+        var token = tokenProvider.Create(user);
 
         return token;
     }
 
     public async Task<ResponseUserDto> FindUserByEmail(string email)
     {
-        var user = await _userRepository.FindUserByEmail(email) ?? throw new NotFoundException("User not found!");
+        var user = await userRepository.FindUserByEmail(email) ?? throw new NotFoundException("User not found!");
         var userFormatted = user.MapUserToResponseUserDto();
 
         return userFormatted;
@@ -62,15 +53,15 @@ public class UserService : IUserService
 
     public async Task<ResponseUserDto> FindUserByCpf(string cpf)
     {
-        var user = await _userRepository.FindUserByCpf(cpf) ?? throw new NotFoundException("User not found!");
+        var user = await userRepository.FindUserByCpf(cpf) ?? throw new NotFoundException("User not found!");
         var userFormatted = user.MapUserToResponseUserDto();
 
         return userFormatted;
     }
 
-    public async Task<UpdateUserDto> UpdateUserByCpf(UpdateUserDto updateUserDto, string cpf)
+    public async Task<UpdateUserDto> UpdateUserByGuid(UpdateUserDto updateUserDto, Guid userId)
     {
-        var user = await _userRepository.FindUserByCpf(cpf);
+        var user = await userRepository.FindUserByGuid(userId);
 
         if (user is null)
             throw new NotFoundException("User not found!");
@@ -78,18 +69,20 @@ public class UserService : IUserService
         user.SetEmail(updateUserDto.Email);
         user.SetPassword(updateUserDto.Password);
 
-        await _userRepository.UpdateUser(user);
+        await userRepository.UpdateUser(user);
 
         return updateUserDto;
     }
 
-    public async Task DeleteUserByEmail(string email)
+    public async Task DeleteUser(string password, Guid userId)
     {
-        var user = await _userRepository.FindUserByEmail(email);
+        var user = await userRepository.FindUserByGuid(userId) ?? throw new NotFoundException("User not found!");
 
-        if (user is null)
-            throw new NotFoundException("User not found!");
+        var passwordMatches = user.Password.Verify(password, user.Password.PasswordValue);
 
-        await _userRepository.DeleteUser(user);
+        if (!passwordMatches)
+            throw new Exception("Wrong Password!");
+
+        await userRepository.DeleteUser(user);
     }
 }
