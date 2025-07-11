@@ -3,7 +3,6 @@
     public record CreateExpenseDto(
         decimal Value,
         DateOnly Date,
-        Guid UserId,
         Guid CategoryId);
     
 }

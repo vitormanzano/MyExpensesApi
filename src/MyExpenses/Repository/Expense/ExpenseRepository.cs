@@ -1,4 +1,5 @@
-﻿using MyExpenses.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using MyExpenses.Data;
 using MyExpenses.Models;
 
 namespace MyExpenses.Repository.Expense
@@ -18,6 +19,15 @@ namespace MyExpenses.Repository.Expense
             await _context.SaveChangesAsync();
 
             return expenseDb.Entity;
+        }
+
+        public async Task<List<ExpenseModel>> FindAllExpenses(Guid userId)
+        {
+            var expenses = await _context.Expenses
+                .Where(e => e.UserId == userId)
+                .ToListAsync();
+
+            return expenses;
         }
     }
 }

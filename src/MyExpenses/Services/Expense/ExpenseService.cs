@@ -14,12 +14,12 @@ namespace MyExpenses.Services.Expense
             _expenseRepository = expenseRepository;
         }
 
-        public async Task<ResponseExpenseDto> CreateExpense(CreateExpenseDto createExpenseDto)
+        public async Task<ResponseExpenseDto> CreateExpense(CreateExpenseDto createExpenseDto, Guid UserId)
         {
             var expenseModel = new ExpenseModel(
                 createExpenseDto.Value,
                 createExpenseDto.Date,
-                createExpenseDto.UserId,
+                UserId,
                 createExpenseDto.CategoryId);
 
             var expenseDb = await _expenseRepository.CreateExpense(expenseModel);
@@ -27,6 +27,15 @@ namespace MyExpenses.Services.Expense
             var expenseResponse = expenseDb.MapExpenseToResponseExpenseDto();
 
             return expenseResponse;
+        }
+
+        public async Task<List<ResponseExpenseDto>> FindAllExpenses(Guid userId)
+        {
+            var expenses = await _expenseRepository.FindAllExpenses(userId);
+
+            var expensesResponse = expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
+
+            return expensesResponse;
         }
     }
 }
