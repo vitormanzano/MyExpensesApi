@@ -14,15 +14,23 @@ namespace MyExpenses.Services.Category
             _categoryRepository = categoryRepository;
         }
 
-        public async Task<ResponseCategoryDto> CreateCategory(CreateCategoryDto createCategoryDto)
+        public async Task<ResponseCategoryDto> CreateCategory(CreateCategoryDto createCategoryDto, Guid userId)
         {
-            var categoryModel = new CategoryModel(createCategoryDto.Name, createCategoryDto.UserId);
+            var categoryModel = new CategoryModel(createCategoryDto.Name, userId);
 
             await _categoryRepository.CreateCategory(categoryModel);
 
             var categoryFormatted = categoryModel.MapCategoryToResponseCategoryDto();
 
             return categoryFormatted;
+        }
+
+        public async Task<List<ResponseCategoryDto>> FindAllCategoriesByUser(Guid userId)
+        {
+            var categories = await _categoryRepository.FindAllCategoriesByUser(userId);
+            var categoriesResponse = categories.Select(x => x.MapCategoryToResponseCategoryDto()).ToList();
+
+            return categoriesResponse;
         }
     }
 }
