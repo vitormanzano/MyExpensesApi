@@ -8,7 +8,7 @@ namespace MyExpenses.Repository.Category
         Task CreateCategory(CategoryModel category);
         Task<List<CategoryModel>> FindAllCategoriesByUser(Guid userId);
         Task<CategoryModel> FindCategoryById(Guid categoryId);
-        Task<CategoryModel> FindCategoryByName(string name);
+        Task<CategoryModel> FindCategoryByName(string name, Guid userId);
         Task<CategoryModel> UpdateCategoryById(CategoryModel category);
         Task DeleteCategory(CategoryModel category);
     }

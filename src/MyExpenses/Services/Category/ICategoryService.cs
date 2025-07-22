@@ -7,8 +7,9 @@ namespace MyExpenses.Services.Category
         Task<ResponseCategoryDto> CreateCategory(CreateCategoryDto createCategoryDto, Guid userId);
         Task<List<ResponseCategoryDto>> FindAllCategoriesByUser(Guid userId);
         Task<ResponseCategoryDto> FindCategoryById(Guid id);
-        Task<ResponseCategoryDto> FindCategoryByName(string name);
+        Task<ResponseCategoryDto> FindCategoryByName(string name, Guid userId);
         Task<ResponseCategoryDto> UpdateCategoryById(Guid id, string name);
         Task DeleteCategoryById(Guid id);
+        Task DeleteCategoryByName(string name, Guid userId);
     }
 }

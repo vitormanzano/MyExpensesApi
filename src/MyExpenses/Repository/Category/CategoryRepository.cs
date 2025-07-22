@@ -25,17 +25,18 @@ namespace MyExpenses.Repository.Category
         {
             var category = await context.Categories
                 .FindAsync(categoryId);
-
             return category;
         }
-
-        public async Task<CategoryModel> FindCategoryByName(string name)
+        
+        public async Task<CategoryModel> FindCategoryByName(string name, Guid userId)
         {
-
             var category = await context.Categories
-                .FirstOrDefaultAsync(x => x.Name.Equals(name));
+                .Where(x => x.Name.Equals(name) && x.UserId.Equals(userId))
+                .FirstOrDefaultAsync();
+
             return category;
         }
+
 
         public async Task<CategoryModel> UpdateCategoryById(CategoryModel category)
         {

@@ -33,9 +33,9 @@ namespace MyExpenses.Services.Category
             return categoryResponse;
         }
 
-        public async Task<ResponseCategoryDto> FindCategoryByName(string name)
+        public async Task<ResponseCategoryDto> FindCategoryByName(string name, Guid userId)
         {
-            var category = await categoryRepository.FindCategoryByName(name) ?? throw new NotFoundException("Category not found!");
+            var category = await categoryRepository.FindCategoryByName(name, userId) ?? throw new NotFoundException("Category not found!");
 
             var categoryResponse = category.MapCategoryToResponseCategoryDto();
             return categoryResponse;
@@ -59,9 +59,9 @@ namespace MyExpenses.Services.Category
             await categoryRepository.DeleteCategory(category);
         }
 
-        public async Task DeleteCategoryByName(string name)
+        public async Task DeleteCategoryByName(string name, Guid userId)
         {
-            var category = await categoryRepository.FindCategoryByName(name) ?? throw new NotFoundException("Category not found!");
+            var category = await categoryRepository.FindCategoryByName(name, userId) ?? throw new NotFoundException("Category not found!");
             await categoryRepository.DeleteCategory(category);
         }
     }
