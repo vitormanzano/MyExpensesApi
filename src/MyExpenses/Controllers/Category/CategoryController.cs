@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyExpenses.Dtos.Category;
+using MyExpenses.Dtos.Common;
 using MyExpenses.Services.Category;
 using MyExpenses.Services.Exceptions;
 using MyExpenses.UserContext;
@@ -43,6 +44,27 @@ namespace MyExpenses.Controllers.Category
                 var userId = userContext.UserId;
 
                 var categories = await categoryService.FindAllCategoriesByUser(userId);
+                return Ok(categories);
+            }
+            catch (Exception ex)
+            {
+                return ex switch
+                {
+                    UnauthorizedAccessException => Unauthorized(ex.Message),
+                    _ => BadRequest(ex.Message),
+                };
+            }
+        }
+        
+        [Authorize]
+        [HttpGet("FindAllCategoriesPaginated")]
+        public async Task<IActionResult> FindAllCategories([FromQuery] PaginationDto paginationDto)
+        {
+            try
+            {
+                var userId = userContext.UserId;
+
+                var categories = await categoryService.FindAllCategoriesByUserPaginated(userId, paginationDto.Page, paginationDto.PageSize);
                 return Ok(categories);
             }
             catch (Exception ex)
