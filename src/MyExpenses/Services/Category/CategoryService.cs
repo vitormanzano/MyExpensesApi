@@ -1,4 +1,5 @@
 ﻿using MyExpenses.Dtos.Category;
+using MyExpenses.Dtos.Common;
 using MyExpenses.Mappers;
 using MyExpenses.Models;
 using MyExpenses.Repository.Category;
@@ -10,6 +11,13 @@ namespace MyExpenses.Services.Category
     {
         public async Task<ResponseCategoryDto> CreateCategory(CreateCategoryDto createCategoryDto, Guid userId)
         {
+            var existingCategory = await categoryRepository.FindCategoryByName(createCategoryDto.Name, userId);
+
+            if (existingCategory != null)
+            {
+                throw new InvalidOperationException("Category with this name already exists for the user.");
+            }
+            
             var categoryModel = new CategoryModel(createCategoryDto.Name, userId);
             await categoryRepository.CreateCategory(categoryModel);
 
@@ -23,6 +31,26 @@ namespace MyExpenses.Services.Category
             var categoriesResponse = categories.Select(x => x.MapCategoryToResponseCategoryDto()).ToList();
 
             return categoriesResponse;
+        }
+
+        public async Task<PagedResultDto<ResponseCategoryDto>> FindAllCategoriesByUserPaginated(Guid userId, int page, int pageSize)
+        {
+            var (categories, totalCount) = await categoryRepository.FindAllCategoriesByUserPaginated(userId, page, pageSize);
+            
+            var categoriesResponse = categories.Select(x => x.MapCategoryToResponseCategoryDto()).ToList();
+            
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize); // Divide, cast to double the division,Ceiling round up the result and cast to int
+            
+            return new PagedResultDto<ResponseCategoryDto>
+            {
+                Data = categoriesResponse,
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = totalCount,
+                TotalPages = totalPages,
+                HasPreviousPage = page > 1,
+                HasNextPage = page < totalPages
+            };
         }
 
         public async Task<ResponseCategoryDto> FindCategoryById(Guid id)

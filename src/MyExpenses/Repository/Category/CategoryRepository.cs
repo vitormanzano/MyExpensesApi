@@ -22,7 +22,26 @@ namespace MyExpenses.Repository.Category
 
             return categories;
         }
-        
+
+        public async Task<(List<CategoryModel> Categories, int TotalCount)> FindAllCategoriesByUserPaginated(Guid userId, int page, int pageSize)
+        {
+            var query = context.Categories //Prepare the query to use
+                .AsNoTracking()
+                .Where(x => x.UserId == userId);
+
+            // Count how many categories return
+            var totalCount = await query.CountAsync();
+
+            // Paginate categories
+            var categories = await query
+                .OrderBy(category => category.Name)
+                .Skip((page - 1) * pageSize) // How much I want to skip | page = 1 | (1 - 1) * 20 = 0
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (categories, totalCount);
+        }
+
         public async Task<CategoryModel> FindCategoryById(Guid categoryId)
         {
             var category = await context.Categories

@@ -1,4 +1,5 @@
 ﻿using MyExpenses.Dtos.Category;
+using MyExpenses.Dtos.Common;
 
 namespace MyExpenses.Services.Category
 {
@@ -6,6 +7,7 @@ namespace MyExpenses.Services.Category
     {
         Task<ResponseCategoryDto> CreateCategory(CreateCategoryDto createCategoryDto, Guid userId);
         Task<List<ResponseCategoryDto>> FindAllCategoriesByUser(Guid userId);
+        Task<PagedResultDto<ResponseCategoryDto>> FindAllCategoriesByUserPaginated(Guid userId, int page, int pageSize);
         Task<ResponseCategoryDto> FindCategoryById(Guid id);
         Task<ResponseCategoryDto> FindCategoryByName(string name, Guid userId);
         Task<ResponseCategoryDto> UpdateCategoryById(Guid id, string name);

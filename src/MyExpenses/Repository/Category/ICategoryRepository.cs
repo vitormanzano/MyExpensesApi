@@ -11,5 +11,6 @@ namespace MyExpenses.Repository.Category
         Task<CategoryModel> FindCategoryByName(string name, Guid userId);
         Task<CategoryModel> UpdateCategoryById(CategoryModel category);
         Task DeleteCategory(CategoryModel category);
+        Task<(List<CategoryModel> Categories, int TotalCount)> FindAllCategoriesByUserPaginated(Guid userId, int page, int pageSize);
     }
 }
