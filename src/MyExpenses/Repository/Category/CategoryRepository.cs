@@ -15,24 +15,27 @@ namespace MyExpenses.Repository.Category
         public async Task<List<CategoryModel>> FindAllCategoriesByUser(Guid userId)
         {
             var categories = await context.Categories
-                .Where(x => x.UserId.Equals(userId))
+                .AsNoTracking()
+                .Where(x => x.UserId == userId) 
+                .OrderBy(category => category.Name)
                 .ToListAsync();
 
             return categories;
         }
-
+        
         public async Task<CategoryModel> FindCategoryById(Guid categoryId)
         {
             var category = await context.Categories
-                .FindAsync(categoryId);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == categoryId);
             return category;
         }
         
         public async Task<CategoryModel> FindCategoryByName(string name, Guid userId)
         {
             var category = await context.Categories
-                .Where(x => x.Name.Equals(name) && x.UserId.Equals(userId))
-                .FirstOrDefaultAsync();
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Name.Equals(name) && c.UserId == userId);
 
             return category;
         }
