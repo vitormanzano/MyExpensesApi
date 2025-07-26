@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyExpenses.Dtos.Category;
 using MyExpenses.Services.Category;
+using MyExpenses.Services.Exceptions;
 using MyExpenses.UserContext;
 
 namespace MyExpenses.Controllers.Category
@@ -26,6 +28,7 @@ namespace MyExpenses.Controllers.Category
                 return ex switch
                 {
                     UnauthorizedAccessException => Unauthorized(ex.Message),
+                    InvalidOperationException => Conflict(error: ex.Message),
                     _ => BadRequest(ex.Message),
                 };
             }
@@ -66,6 +69,7 @@ namespace MyExpenses.Controllers.Category
                 return ex switch
                 {
                     UnauthorizedAccessException => Unauthorized(ex.Message),
+                    NotFoundException => NotFound(ex.Message),
                     _ => BadRequest(ex.Message),
                 };
             }
@@ -87,6 +91,7 @@ namespace MyExpenses.Controllers.Category
                 return ex switch
                 {
                     UnauthorizedAccessException => Unauthorized(ex.Message),
+                    NotFoundException => NotFound(ex.Message),
                     _ => BadRequest(ex.Message),
                 };
             }
@@ -106,6 +111,7 @@ namespace MyExpenses.Controllers.Category
                 return ex switch
                 {
                     UnauthorizedAccessException => Unauthorized(ex.Message),
+                    NotFoundException => NotFound(ex.Message),
                     _ => BadRequest(ex.Message),
                 };
             }
@@ -125,6 +131,7 @@ namespace MyExpenses.Controllers.Category
                 return ex switch
                 {
                     UnauthorizedAccessException => Unauthorized(ex.Message),
+                    NotFoundException => NotFound(ex.Message),
                     _ => BadRequest(ex.Message),
                 };
             }
@@ -146,6 +153,7 @@ namespace MyExpenses.Controllers.Category
                 return ex switch
                 {
                     UnauthorizedAccessException => Unauthorized(ex.Message),
+                    NotFoundException => NotFound(ex.Message),
                     _ => BadRequest(ex.Message),
                 };
             }
