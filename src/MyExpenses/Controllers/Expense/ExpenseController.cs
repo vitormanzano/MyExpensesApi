@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyExpenses.Dtos.Expense;
+using MyExpenses.Services.Exceptions;
 using MyExpenses.Services.Expense;
 using MyExpenses.UserContext;
 
@@ -22,7 +23,11 @@ namespace MyExpenses.Controllers.Expense
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return ex switch
+                {
+                    UnauthorizedAccessException => Unauthorized(ex.Message),
+                    _ => BadRequest(ex.Message)
+                };
             }
         }
 
@@ -43,11 +48,77 @@ namespace MyExpenses.Controllers.Expense
             {
                 return ex switch
                 {
-                    Exception => Unauthorized(ex.Message),
+                    UnauthorizedAccessException => Unauthorized(ex.Message),
                     _ => BadRequest(ex.Message)
                 };
             }
+        }
 
+        [Authorize]
+        [HttpGet("FindExpenseById/{id}")]
+        public async Task<IActionResult> FindExpenseById([FromRoute] Guid expenseId)
+        {
+            try
+            {
+                var expenses = await expenseService.FindExpenseById(expenseId);
+                return Ok(expenses);
+
+            }
+            catch (Exception ex)
+            {
+                return ex switch
+                {
+                    UnauthorizedAccessException => Unauthorized(ex.Message),
+                    NotFoundException => NotFound(ex.Message),
+                    _ => BadRequest(ex.Message)
+                };
+            }
+        }
+        
+        [Authorize]
+        [HttpGet("FindExpensesByValue/{value}")]
+        public async Task<IActionResult> FindExpensesByValue([FromRoute] decimal value)
+        {
+            try
+            {
+                var userId = userContext.UserId;
+
+                var expenses = await expenseService.FindExpensesByValue(userId, value);
+                return Ok(expenses);
+
+            }
+            catch (Exception ex)
+            {
+                return ex switch
+                {
+                    UnauthorizedAccessException => Unauthorized(ex.Message),
+                    NotFoundException => NotFound(ex.Message),
+                    _ => BadRequest(ex.Message)
+                };
+            }
+        }
+        
+        [Authorize]
+        [HttpGet("FindExpensesByMonth")]
+        public async Task<IActionResult> FindExpensesByMonth([FromQuery] int month, [FromQuery] int year)
+        {
+            try
+            {
+                var userId = userContext.UserId;
+                var expenses = await expenseService.FindExpenseByMonth(userId, month, year);
+
+                return Ok(expenses);
+
+            }
+            catch (Exception ex)
+            {
+                return ex switch
+                {
+                    UnauthorizedAccessException => Unauthorized(ex.Message),
+                    NotFoundException => NotFound(ex.Message),
+                    _ => BadRequest(ex.Message)
+                };
+            }
         }
     }
 }
