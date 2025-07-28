@@ -15,7 +15,7 @@ namespace MyExpenses.Services.Category
 
             if (existingCategory != null)
             {
-                throw new InvalidOperationException("Category with this name already exists for the user.");
+                throw new InvalidOperationException("Category with this name already exists!");
             }
             
             var categoryModel = new CategoryModel(createCategoryDto.Name, userId);
