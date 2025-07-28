@@ -10,7 +10,6 @@ namespace MyExpenses.Mappers
             var expenseResponse = new ResponseExpenseDto(
                 expense.Value,
                 expense.Date,
-                expense.UserId,
                 expense.Category.Name);
 
             return expenseResponse;
