@@ -4,13 +4,10 @@
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public Guid UserId { get; set; }
-
-        public ResponseCategoryDto(Guid id, string name, Guid userId)
+        public ResponseCategoryDto(Guid id, string name)
         {
             Id = id;
             Name = name;
-            UserId = userId;
         }
     }
 }

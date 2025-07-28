@@ -9,8 +9,7 @@ namespace MyExpenses.Mappers
         {
             var categoryResponse = new ResponseCategoryDto(
                 category.Id,
-               category.Name,
-               category.UserId);
+                category.Name);
 
             return categoryResponse;
         }
