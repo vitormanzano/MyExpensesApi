@@ -58,5 +58,13 @@ namespace MyExpenses.Repository.Expense
 
             return expenses;
         }
+
+        public async Task<ExpenseModel> UpdateExpense(ExpenseModel expense)
+        {
+            context.Expenses.Update(expense);
+            await context.SaveChangesAsync();
+
+            return expense;
+        }
     }
 }
