@@ -89,5 +89,11 @@ namespace MyExpenses.Services.Expense
             var expenseResponse = updatedExpense.MapExpenseToResponseExpenseDto();
             return expenseResponse;
         }
+
+        public async Task DeleteExpense(Guid expenseId, Guid userId)
+        {
+            var expense = await expenseRepository.FindExpenseById(expenseId, userId) ??  throw new NotFoundException("Expense not found!");
+            await expenseRepository.DeleteExpense(expense);
+        }
     }
 }
