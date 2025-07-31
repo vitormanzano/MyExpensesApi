@@ -52,8 +52,18 @@ namespace MyExpenses.Services.Expense
             var expensesResponse = expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
             return expensesResponse;
         }
+        
+        public async Task<List<ResponseExpenseDto>> FindExpensesByCategory(Guid userId, Guid categoryId)
+        {
+            var expenses = await expenseRepository.FindExpensesByCategory(userId, categoryId);
+            
+            if (expenses.Count == 0)
+                throw new NotFoundException("None expense was found!");
+            var expensesResponse = expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
+            return expensesResponse;
+        }
 
-        public async Task<List<ResponseExpenseDto>> FindExpenseByMonth(Guid userId, int month, int year)
+        public async Task<List<ResponseExpenseDto>> FindExpensesByMonth(Guid userId, int month, int year)
         {
             if (month < 1 || month > 12)
                 throw new ArgumentException("Month must be between 1 and 12!");

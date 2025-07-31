@@ -9,7 +9,8 @@ namespace MyExpenses.Services.Expense
         Task<List<ResponseExpenseDto>> FindAllExpenses(Guid userId);
         Task<ResponseExpenseDto> FindExpenseById(Guid id, Guid userId);
         Task<List<ResponseExpenseDto>> FindExpensesByValue(Guid userId, decimal value);
-        Task<List<ResponseExpenseDto>> FindExpenseByMonth(Guid userId, int month, int year);
+        Task<List<ResponseExpenseDto>> FindExpensesByMonth(Guid userId, int month, int year);
+        Task<List<ResponseExpenseDto>> FindExpensesByCategory(Guid userId, Guid categoryId);
         Task<ResponseExpenseDto> UpdateExpenseById(UpdateExpenseDto updateExpenseDto, Guid userId);
         Task DeleteExpense(Guid expenseId, Guid userId);
     }
