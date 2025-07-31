@@ -145,7 +145,9 @@ namespace MyExpenses.Controllers.Category
         {
             try
             {
-                await categoryService.DeleteCategoryById(categoryId);
+                var userId = userContext.UserId;
+                
+                await categoryService.DeleteCategoryById(userId, categoryId);
                 return Ok();
             }
             catch (Exception ex)
