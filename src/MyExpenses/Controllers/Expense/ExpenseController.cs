@@ -120,5 +120,25 @@ namespace MyExpenses.Controllers.Expense
                 };
             }
         }
+
+        [Authorize]
+        [HttpPut("UpdateExpenseById")]
+        public async Task<IActionResult> UpdateExpenseById([FromBody] UpdateExpenseDto updateExpenseDto)
+        {
+            try
+            {
+                var updatedExpense = await expenseService.UpdateExpenseById(updateExpenseDto);
+                return Ok(updatedExpense);
+            }
+            catch (Exception ex)
+            {
+                return ex switch
+                {
+                    UnauthorizedAccessException => Unauthorized(ex.Message),
+                    NotFoundException => NotFound(ex.Message),
+                    _ => BadRequest(ex.Message)
+                };
+            }
+        }
     }
 }
