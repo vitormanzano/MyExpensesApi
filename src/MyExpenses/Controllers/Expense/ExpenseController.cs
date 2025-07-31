@@ -144,5 +144,27 @@ namespace MyExpenses.Controllers.Expense
                 };
             }
         }
+
+        [Authorize]
+        [HttpDelete("DeleteExpenseById/{id}")]
+        public async Task<IActionResult> DeleteExpenseById([FromRoute] Guid id)
+        {
+            try
+            {
+                var userId = userContext.UserId;
+                
+                await expenseService.DeleteExpense(id, userId);
+                return Ok("Expense Deleted");
+            }
+            catch (Exception ex)
+            {
+                return ex switch
+                {
+                    UnauthorizedAccessException => Unauthorized(ex.Message),
+                    NotFoundException => NotFound(ex.Message),
+                    _ => BadRequest(ex.Message)
+                };
+            }
+        }
     }
 }
