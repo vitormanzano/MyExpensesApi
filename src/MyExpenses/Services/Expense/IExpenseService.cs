@@ -9,5 +9,6 @@ namespace MyExpenses.Services.Expense
         Task<ResponseExpenseDto> FindExpenseById(Guid id);
         Task<List<ResponseExpenseDto>> FindExpensesByValue(Guid userId, decimal value);
         Task<List<ResponseExpenseDto>> FindExpenseByMonth(Guid userId, int month, int year);
+        Task<ResponseExpenseDto> UpdateExpenseById(UpdateExpenseDto updateExpenseDto);
     }
 }

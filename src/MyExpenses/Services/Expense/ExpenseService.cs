@@ -72,5 +72,22 @@ namespace MyExpenses.Services.Expense
             var expensesResponse = expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
             return expensesResponse;
         }
+
+        public async Task<ResponseExpenseDto> UpdateExpenseById(UpdateExpenseDto updateExpenseDto)
+        {
+            var expenseExist = await expenseRepository.FindExpenseById(updateExpenseDto.ExpenseId);
+            
+            if (expenseExist == null) 
+                throw new NotFoundException("Expense not found!");
+            
+            expenseExist.SetValue(updateExpenseDto.Value);
+            expenseExist.SetDate(updateExpenseDto.Date);
+            expenseExist.SetCategoryId(updateExpenseDto.CategoryId);
+            
+            var updatedExpense = await expenseRepository.UpdateExpense(expenseExist);
+            
+            var expenseResponse = updatedExpense.MapExpenseToResponseExpenseDto();
+            return expenseResponse;
+        }
     }
 }
