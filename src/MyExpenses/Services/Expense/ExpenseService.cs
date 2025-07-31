@@ -31,9 +31,9 @@ namespace MyExpenses.Services.Expense
             return expensesResponse;
         }
 
-        public async Task<ResponseExpenseDto> FindExpenseById(Guid id)
+        public async Task<ResponseExpenseDto> FindExpenseById(Guid id, Guid userId)
         {
-            var expense = await expenseRepository.FindExpenseById(id) ?? throw new NotFoundException("Expense not found!");
+            var expense = await expenseRepository.FindExpenseById(id, userId) ?? throw new NotFoundException("Expense not found!");
             
             var expenseResponse = expense.MapExpenseToResponseExpenseDto();
             return expenseResponse;
@@ -73,9 +73,9 @@ namespace MyExpenses.Services.Expense
             return expensesResponse;
         }
 
-        public async Task<ResponseExpenseDto> UpdateExpenseById(UpdateExpenseDto updateExpenseDto)
+        public async Task<ResponseExpenseDto> UpdateExpenseById(UpdateExpenseDto updateExpenseDto, Guid userId)
         {
-            var expenseExist = await expenseRepository.FindExpenseById(updateExpenseDto.ExpenseId);
+            var expenseExist = await expenseRepository.FindExpenseById(updateExpenseDto.ExpenseId, userId);
             
             if (expenseExist == null) 
                 throw new NotFoundException("Expense not found!");

@@ -60,7 +60,9 @@ namespace MyExpenses.Controllers.Expense
         {
             try
             {
-                var expenses = await expenseService.FindExpenseById(expenseId);
+                var userId = userContext.UserId;
+                
+                var expenses = await expenseService.FindExpenseById(expenseId, userId);
                 return Ok(expenses);
 
             }
@@ -127,7 +129,9 @@ namespace MyExpenses.Controllers.Expense
         {
             try
             {
-                var updatedExpense = await expenseService.UpdateExpenseById(updateExpenseDto);
+                var userId = userContext.UserId;
+                
+                var updatedExpense = await expenseService.UpdateExpenseById(updateExpenseDto, userId);
                 return Ok(updatedExpense);
             }
             catch (Exception ex)

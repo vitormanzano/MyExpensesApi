@@ -25,12 +25,12 @@ namespace MyExpenses.Repository.Expense
             return expenses;
         }
 
-        public async Task<ExpenseModel> FindExpenseById(Guid id)
+        public async Task<ExpenseModel> FindExpenseById(Guid id, Guid userId)
         {
             var expense = await context.Expenses
                 .AsNoTracking()
                 .Include(e => e.Category)
-                .FirstOrDefaultAsync(e => e.Id == id);
+                .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
             return expense;
         }
 
