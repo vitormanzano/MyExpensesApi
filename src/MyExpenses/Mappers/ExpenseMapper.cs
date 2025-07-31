@@ -8,6 +8,7 @@ namespace MyExpenses.Mappers
         public static ResponseExpenseDto MapExpenseToResponseExpenseDto(this ExpenseModel expense)
         {
             var expenseResponse = new ResponseExpenseDto(
+                expense.Id,
                 expense.Value,
                 expense.Date,
                 expense.Category.Name);
