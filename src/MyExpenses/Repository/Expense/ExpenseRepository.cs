@@ -59,6 +59,15 @@ namespace MyExpenses.Repository.Expense
             return expenses;
         }
 
+        public async Task<List<ExpenseModel>> FindExpensesByCategory(Guid userId, Guid categoryId)
+        {
+            var expenses = await context.Expenses
+                .AsNoTracking()
+                .Where(e => e.UserId == userId && e.CategoryId == categoryId)
+                .ToListAsync();
+            return expenses;
+        }
+
         public async Task<ExpenseModel> UpdateExpense(ExpenseModel expense)
         {
             context.Expenses.Update(expense);
