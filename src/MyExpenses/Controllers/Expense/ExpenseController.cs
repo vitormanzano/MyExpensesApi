@@ -124,6 +124,28 @@ namespace MyExpenses.Controllers.Expense
         }
 
         [Authorize]
+        [HttpGet("FindExpenseByCategory/{categoryId}")]
+        public async Task<IActionResult> FindExpenseByCategory([FromRoute] Guid categoryId)
+        {
+            try
+            {
+                var userId = userContext.UserId;
+                
+                var expenses = await expenseService.FindExpensesByCategory(userId, categoryId);
+                return Ok(expenses);
+            }
+            catch (Exception ex)
+            {
+                return ex switch
+                {
+                    UnauthorizedAccessException => Unauthorized(ex.Message),
+                    NotFoundException => NotFound(ex.Message),
+                    _ => BadRequest(ex.Message)
+                };
+            }
+        }
+        
+        [Authorize]
         [HttpPut("UpdateExpenseById")]
         public async Task<IActionResult> UpdateExpenseById([FromBody] UpdateExpenseDto updateExpenseDto)
         {
