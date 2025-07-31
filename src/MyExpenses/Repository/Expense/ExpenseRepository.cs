@@ -66,5 +66,11 @@ namespace MyExpenses.Repository.Expense
 
             return expense;
         }
+
+        public async Task DeleteExpense(ExpenseModel expense)
+        {
+            context.Expenses.Remove(expense);
+            await context.SaveChangesAsync();
+        }
     }
 }

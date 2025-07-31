@@ -10,5 +10,6 @@ namespace MyExpenses.Repository.Expense
         Task<List<ExpenseModel>> FindExpensesByValue(Guid userId, decimal value);
         Task<List<ExpenseModel>> FindExpensesByDate(Guid userId, DateOnly startDate, DateOnly endDate);
         Task<ExpenseModel> UpdateExpense(ExpenseModel expense);
+        Task DeleteExpense(ExpenseModel expense);
     }
 }
