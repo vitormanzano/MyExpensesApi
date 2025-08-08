@@ -8,7 +8,8 @@ namespace MyExpenses.Repository.Expense
     {
         public async Task<ExpenseModel> CreateExpense(ExpenseModel expense)
         {
-            var expenseDb = context.Expenses.Add(expense);
+            var expenseDb = context.Expenses
+                .Add(expense);
             await context.SaveChangesAsync();
 
             return expenseDb.Entity;

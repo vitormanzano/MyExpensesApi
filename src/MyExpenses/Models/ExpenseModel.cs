@@ -4,6 +4,7 @@
     {
         public Guid Id { get; private set; }
         public decimal Value { get; private set; }
+        public string Description { get; private set; }
         public DateOnly Date {  get; private set; }
         public Guid UserId { get; private set; }
         public UserModel User { get; }
@@ -12,10 +13,11 @@
 
         protected ExpenseModel() { }
 
-        public ExpenseModel(decimal value, DateOnly date, Guid userId, Guid categoryId)
+        public ExpenseModel(decimal value, string description, DateOnly date, Guid userId, Guid categoryId)
         {
             Id = Guid.NewGuid();
             SetValue(value);
+            SetDescription(description);
             SetDate(date);
             SetUserId(userId);
             SetCategoryId(categoryId);
@@ -31,6 +33,18 @@
         {
             if (value <= 0)
                 throw new ArgumentException("Value must be greater than zero");
+        }
+
+        public void SetDescription(string description)
+        {
+            ValidateDescription(description);
+            Description = description;
+        }
+
+        private void ValidateDescription(string description)
+        {
+            if (description.Length > 255)
+                throw new ArgumentException("Description shouldn't have more than 255 characters");
         }
 
         public void SetDate(DateOnly date)

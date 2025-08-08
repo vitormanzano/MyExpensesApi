@@ -10,8 +10,9 @@ namespace MyExpenses.Mappers
             var expenseResponse = new ResponseExpenseDto(
                 expense.Id,
                 expense.Value,
+                expense.Description,
                 expense.Date,
-                expense.Category.Name);
+                expense.Category.Id);
 
             return expenseResponse;
         }

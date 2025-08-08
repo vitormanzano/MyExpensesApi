@@ -15,6 +15,9 @@ namespace MyExpenses.Data.Configurations
                 .HasColumnType("DECIMAL(18,2)")
                 .IsRequired();
 
+            builder.Property(p => p.Description)
+                .HasMaxLength(255);
+
             builder.Property(p => p.Date)
                 .IsRequired();
 

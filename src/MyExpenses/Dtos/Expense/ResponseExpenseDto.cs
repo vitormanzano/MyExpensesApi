@@ -3,7 +3,8 @@
     public record ResponseExpenseDto(
         Guid Id,
         decimal Value,
+        string Description,
         DateOnly Date,
-        string Category);
+        Guid CategoryId);
     
 }

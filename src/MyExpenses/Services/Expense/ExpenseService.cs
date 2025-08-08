@@ -12,6 +12,7 @@ namespace MyExpenses.Services.Expense
         {
             var expenseModel = new ExpenseModel(
                 createExpenseDto.Value,
+                createExpenseDto.Description,
                 createExpenseDto.Date,
                 userId,
                 createExpenseDto.CategoryId);
