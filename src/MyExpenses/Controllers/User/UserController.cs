@@ -22,7 +22,11 @@ namespace MyExpenses.Controllers.User
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return ex switch
+                {
+                    ArgumentException => Conflict(ex.Message),
+                    _ => BadRequest(ex.Message)
+                }; 
             }
         }
 
@@ -39,8 +43,8 @@ namespace MyExpenses.Controllers.User
             {
                 return ex switch
                 {
-                    NotFoundException => NotFound(ex.Message),
                     UnauthorizedAccessException => Unauthorized(ex.Message),
+                    NotFoundException => NotFound(ex.Message),
                     _ => BadRequest(ex.Message),
                 };
             }
@@ -59,8 +63,8 @@ namespace MyExpenses.Controllers.User
             {
                 return ex switch
                 {
-                    NotFoundException => NotFound(ex.Message),
                     UnauthorizedAccessException => Unauthorized(ex.Message),
+                    NotFoundException => NotFound(ex.Message),  
                     _ => BadRequest(ex.Message),
                 };
             }
@@ -76,7 +80,12 @@ namespace MyExpenses.Controllers.User
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return ex switch
+                {
+                    NotFoundException => NotFound(ex.Message),
+                    ArgumentException => Conflict(ex.Message),
+                    _ => BadRequest(ex.Message)
+                };
             }
         }
 
@@ -96,6 +105,7 @@ namespace MyExpenses.Controllers.User
                 return ex switch
                 {
                     UnauthorizedAccessException => Unauthorized(ex.Message),
+                    NotFoundException => NotFound(ex.Message),
                     _ => BadRequest(ex.Message),
                 };
             }
@@ -116,8 +126,8 @@ namespace MyExpenses.Controllers.User
             {
                 return ex switch
                 {
-                    NotFoundException => NotFound(ex.Message),
                     UnauthorizedAccessException => Unauthorized(ex.Message),
+                    NotFoundException => NotFound(ex.Message),
                     _ => BadRequest(ex.Message),
                 };
             }

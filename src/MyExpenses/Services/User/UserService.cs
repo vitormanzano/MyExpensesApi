@@ -14,12 +14,12 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
         var userWithEmail = await userRepository.FindUserByEmail(signUpUserDto.Email);
 
         if (userWithEmail is not null)
-            throw new Exception("A user with this email already exists!");
+            throw new ArgumentException("A user with this email already exists!");
 
         var userWithCpf = await userRepository.FindUserByCpf(signUpUserDto.Cpf);
 
         if (userWithCpf is not null)
-            throw new Exception("A user with this cpf already exists!");
+            throw new ArgumentException("A user with this cpf already exists!");
 
         var user = new UserModel(
             signUpUserDto.Cpf,
@@ -36,7 +36,7 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
         var passwordMatches = user.Password.Verify(loginUserDto.Password, user.Password.PasswordValue);
 
         if (!passwordMatches)
-            throw new Exception("Wrong Password!");
+            throw new ArgumentException("Wrong Password!");
 
         var token = tokenProvider.Create(user);
 
