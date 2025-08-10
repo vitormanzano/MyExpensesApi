@@ -26,6 +26,7 @@ namespace MyExpenses.Controllers.Expense
                 return ex switch
                 {
                     UnauthorizedAccessException => Unauthorized(ex.Message),
+                    ArgumentException => Conflict(ex.Message),
                     _ => BadRequest(ex.Message)
                 };
             }
@@ -40,9 +41,7 @@ namespace MyExpenses.Controllers.Expense
                 var userId = userContext.UserId;
 
                 var expenses = await expenseService.FindAllExpenses(userId);
-
                 return Ok(expenses);
-
             }
             catch (Exception ex)
             {
@@ -64,7 +63,6 @@ namespace MyExpenses.Controllers.Expense
                 
                 var expenses = await expenseService.FindExpenseById(expenseId, userId);
                 return Ok(expenses);
-
             }
             catch (Exception ex)
             {
@@ -87,7 +85,6 @@ namespace MyExpenses.Controllers.Expense
 
                 var expenses = await expenseService.FindExpensesByValue(userId, value);
                 return Ok(expenses);
-
             }
             catch (Exception ex)
             {
@@ -109,8 +106,7 @@ namespace MyExpenses.Controllers.Expense
                 var userId = userContext.UserId;
                 var expenses = await expenseService.FindExpensesByMonth(userId, month, year);
 
-                return Ok(expenses);
-
+                return Ok(expenses)
             }
             catch (Exception ex)
             {
@@ -162,6 +158,7 @@ namespace MyExpenses.Controllers.Expense
                 {
                     UnauthorizedAccessException => Unauthorized(ex.Message),
                     NotFoundException => NotFound(ex.Message),
+                    ArgumentException => Conflict(ex.Message),
                     _ => BadRequest(ex.Message)
                 };
             }
