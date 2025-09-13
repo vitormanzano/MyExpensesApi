@@ -43,8 +43,13 @@
 
         private void ValidateDescription(string description)
         {
-            if (description.Length > 255)
-                throw new ArgumentException("Description shouldn't have more than 255 characters");
+            switch (description.Length)
+            {
+                case < 4:
+                    throw new ArgumentException("Description must have at least 4 characters");
+                case > 255:
+                    throw new ArgumentException("Description shouldn't have more than 255 characters");
+            }
         }
 
         public void SetDate(DateOnly date)
