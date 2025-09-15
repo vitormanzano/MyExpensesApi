@@ -10,7 +10,7 @@ namespace MyExpenses.Jwt
     {
         public string Create(UserModel user)
         {
-            string secretKey = configuration["Jwt:SecretKey"];
+            var secretKey = configuration["Jwt:SecretKey"] ?? string.Empty;
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -29,7 +29,7 @@ namespace MyExpenses.Jwt
             };
 
             var handler = new JsonWebTokenHandler();
-            string token = handler.CreateToken(tokenDescription);
+            var token = handler.CreateToken(tokenDescription);
 
             return token;  
         }

@@ -106,7 +106,7 @@ namespace MyExpenses.Controllers.Expense
                 var userId = userContext.UserId;
                 var expenses = await expenseService.FindExpensesByMonth(userId, month, year);
 
-                return Ok(expenses)
+                return Ok(expenses);
             }
             catch (Exception ex)
             {
