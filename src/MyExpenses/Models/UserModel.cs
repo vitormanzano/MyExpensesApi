@@ -6,11 +6,11 @@ namespace MyExpenses.Models
     public class UserModel
     {
         public Guid Id { get; private set; }
-        public string Cpf { get; private set; }
-        public EmailVO Email { get; private set; }
-        public PasswordVO Password { get; private set; }
-        public List<ExpenseModel> Expenses { get; set; } = new List<ExpenseModel>();
-        public List<CategoryModel> Categories { get; set; } = new List<CategoryModel>();
+        public string Cpf { get; private set; } = string.Empty;
+        public EmailVO Email { get; private set; } = null!;
+        public PasswordVO Password { get; private set; } = null!;
+        public List<CategoryModel> Categories = [];
+        public List<ExpenseModel> Expenses = [];
         
         protected UserModel() { }
 
@@ -28,13 +28,13 @@ namespace MyExpenses.Models
             Cpf = cpf;
         }
 
-        private void ValidateCpf(string cpf)
+        private static void ValidateCpf(string cpf)
         {
             if (string.IsNullOrEmpty(cpf))
                 throw new ArgumentException("Cpf cannot be void");
 
             if (cpf.Length != 11)
-                throw new ArgumentException("Cpf must be 11 characters");
+                throw new ArgumentException("Cpf must have 11 characters");
         }
 
         public void SetEmail(string email)
