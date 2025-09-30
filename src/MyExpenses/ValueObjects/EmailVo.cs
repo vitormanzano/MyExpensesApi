@@ -2,13 +2,13 @@
 
 namespace MyExpenses.ValueObjects
 {
-    public class EmailVO
+    public class EmailVo
     {
         public string EmailAddress { get; private set; }
 
-        protected EmailVO() { }
+        protected EmailVo() { }
 
-        public EmailVO(string emailAddress )
+        public EmailVo(string emailAddress )
         {
             SetEmail(emailAddress);
         }

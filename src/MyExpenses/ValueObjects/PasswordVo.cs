@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace MyExpenses.ValueObjects
 {
-    public class PasswordVO
+    public class PasswordVo
     {
         public string PasswordValue { get; private set; }
 
@@ -13,9 +13,9 @@ namespace MyExpenses.ValueObjects
 
         private static readonly HashAlgorithmName Algorithm = HashAlgorithmName.SHA512;
 
-        protected PasswordVO() { }
+        protected PasswordVo() { }
 
-        public PasswordVO(string passwordValue)
+        public PasswordVo(string passwordValue)
         {
             SetPassword(passwordValue);
         }
