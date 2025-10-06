@@ -7,8 +7,8 @@ namespace MyExpenses.Models
     {
         public Guid Id { get; private set; }
         public string Cpf { get; private set; } = string.Empty;
-        public EmailVO Email { get; private set; } = null!;
-        public PasswordVO Password { get; private set; } = null!;
+        public EmailVo Email { get; private set; } = null!;
+        public PasswordVo Password { get; private set; } = null!;
         public List<CategoryModel> Categories = [];
         public List<ExpenseModel> Expenses = [];
         
@@ -39,12 +39,12 @@ namespace MyExpenses.Models
 
         public void SetEmail(string email)
         {
-            Email = new EmailVO(email);
+            Email = new EmailVo(email);
         }
 
         public void SetPassword(string password)
         {
-            Password = new PasswordVO(password);
+            Password = new PasswordVo(password);
         }
     }
 }
