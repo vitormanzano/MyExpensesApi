@@ -1,22 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using MyExpenses.Data;
+using MyExpenses.Data.UnitOfWork;
 using MyExpenses.Models;
 
 namespace MyExpenses.Repository.User;
 
-public class UserRepository : IUserRepository
+public class UserRepository(AppDbContext context) : IUserRepository
 {
-    private readonly AppDbContext _context;
+    private readonly AppDbContext _context = context;
 
-    public UserRepository(AppDbContext context)
-    {
-        _context = context;
-    }
-    
-    public Task SignUpUser(UserModel user)
+    public IUnitOfWork UnitOfWork => _context;
+
+    public void SignUpUser(UserModel user)
     {
         _context.Users.Add(user);
-        return _context.SaveChangesAsync();
     }
 
     public async Task<UserModel> FindUserByGuid(Guid userId)

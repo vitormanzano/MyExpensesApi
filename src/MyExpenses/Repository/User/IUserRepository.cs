@@ -1,10 +1,12 @@
+using MyExpenses.Data.UnitOfWork;
 using MyExpenses.Models;
 
 namespace MyExpenses.Repository.User;
 
 public interface IUserRepository
 {
-    Task SignUpUser(UserModel user);
+    IUnitOfWork UnitOfWork { get; }
+    void SignUpUser(UserModel user);
     Task<UserModel> FindUserByGuid(Guid userId);
     Task<UserModel> FindUserByEmail(string email);
     Task<UserModel> FindUserByCpf(string cpf);

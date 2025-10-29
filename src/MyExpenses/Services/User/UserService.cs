@@ -26,7 +26,13 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
             signUpUserDto.Email,
             signUpUserDto.Password);
 
-        await userRepository.SignUpUser(user);
+        userRepository.SignUpUser(user);
+        bool inserted = await userRepository.UnitOfWork.CommitAsync();
+
+        if (!inserted) 
+            throw new Exception("Could not sign up user!");
+
+        return;
     }
 
     public async Task<string> Login(LoginUserDto loginUserDto)
