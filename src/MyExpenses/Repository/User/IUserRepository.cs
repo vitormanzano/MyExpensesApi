@@ -6,7 +6,7 @@ namespace MyExpenses.Repository.User;
 public interface IUserRepository
 {
     IUnitOfWork UnitOfWork { get; }
-    void SignUpUser(UserModel user);
+    Task SignUpUser(UserModel user);
     Task<UserModel> FindUserByGuid(Guid userId);
     Task<UserModel> FindUserByEmail(string email);
     Task<UserModel> FindUserByCpf(string cpf);

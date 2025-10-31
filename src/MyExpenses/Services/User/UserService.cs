@@ -1,4 +1,5 @@
 using MyExpenses.Dtos.User;
+using MyExpenses.Exceptions.User;
 using MyExpenses.Jwt;
 using MyExpenses.Mappers;
 using MyExpenses.Models;
@@ -14,25 +15,23 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
         var userWithEmail = await userRepository.FindUserByEmail(signUpUserDto.Email);
 
         if (userWithEmail is not null)
-            throw new ArgumentException("A user with this email already exists!");
+            throw new UserAlreadyExistsException("A user with this email already exists!");
 
         var userWithCpf = await userRepository.FindUserByCpf(signUpUserDto.Cpf);
 
         if (userWithCpf is not null)
-            throw new ArgumentException("A user with this cpf already exists!");
+            throw new UserAlreadyExistsException("A user with this cpf already exists!");
 
         var user = new UserModel(
             signUpUserDto.Cpf,
             signUpUserDto.Email,
             signUpUserDto.Password);
 
-        userRepository.SignUpUser(user);
+        await userRepository.SignUpUser(user);
         bool inserted = await userRepository.UnitOfWork.CommitAsync();
 
         if (!inserted) 
             throw new Exception("Could not sign up user!");
-
-        return;
     }
 
     public async Task<string> Login(LoginUserDto loginUserDto)

@@ -11,9 +11,9 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
     public IUnitOfWork UnitOfWork => _context;
 
-    public void SignUpUser(UserModel user)
+    public async Task SignUpUser(UserModel user)
     {
-        _context.Users.Add(user);
+        await _context.Users.AddAsync(user);
     }
 
     public async Task<UserModel> FindUserByGuid(Guid userId)

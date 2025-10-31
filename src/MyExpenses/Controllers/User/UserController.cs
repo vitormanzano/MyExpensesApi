@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyExpenses.Dtos.User;
+using MyExpenses.Exceptions.User;
 using MyExpenses.Services.Exceptions;
 using MyExpenses.Services.User;
 using MyExpenses.UserContext;
@@ -23,7 +24,7 @@ namespace MyExpenses.Controllers.User
             {
                 return ex switch
                 {
-                    ArgumentException => Conflict(ex.Message),
+                    UserAlreadyExistsException => Conflict(ex.Message),
                     _ => BadRequest(ex.Message)
                 }; 
             }
