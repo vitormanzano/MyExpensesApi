@@ -28,7 +28,7 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
             signUpUserDto.Password);
 
         await userRepository.SignUpUser(user);
-        bool inserted = await userRepository.UnitOfWork.CommitAsync();
+        var inserted = await userRepository.UnitOfWork.CommitAsync();
 
         if (!inserted) 
             throw new Exception("Could not sign up user!");
@@ -75,7 +75,11 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
         user.SetPassword(updateUserDto.Password);
 
         await userRepository.UpdateUser(user);
-
+        
+        var updated = await userRepository.UnitOfWork.CommitAsync();
+        if (!updated)
+            throw new Exception("Could't update user");
+        
         return updateUserDto;
     }
 
@@ -87,7 +91,11 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
 
         if (!passwordMatches)
             throw new Exception("Wrong Password!");
-
+        
         await userRepository.DeleteUser(user);
+        
+        var deleted = await userRepository.UnitOfWork.CommitAsync();
+        if (!deleted)
+            throw new Exception("Couldn't delete user");
     }
 }
