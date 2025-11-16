@@ -1,11 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyExpenses.Data;
+using MyExpenses.Data.UnitOfWork;
 using MyExpenses.Models;
 
 namespace MyExpenses.Repository.Expense
 {
     public class ExpenseRepository(AppDbContext context) : IExpenseRepository
     {
+        private readonly AppDbContext _context = context;
+
+        public IUnitOfWork UnitOfWork => _context;
+        
         public async Task<ExpenseModel> CreateExpense(ExpenseModel expense)
         {
             var expenseDb = context.Expenses

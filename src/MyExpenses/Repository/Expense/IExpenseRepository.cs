@@ -1,9 +1,11 @@
-﻿using MyExpenses.Models;
+﻿using MyExpenses.Data.UnitOfWork;
+using MyExpenses.Models;
 
 namespace MyExpenses.Repository.Expense
 {
     public interface IExpenseRepository
     {
+        IUnitOfWork UnitOfWork { get; }
         Task<ExpenseModel> CreateExpense(ExpenseModel expense);
         Task<List<ExpenseModel>> FindAllExpenses(Guid userid);
         Task<ExpenseModel> FindExpenseById(Guid id, Guid userId);

@@ -19,6 +19,10 @@ namespace MyExpenses.Services.Expense
 
             var expenseDb = await expenseRepository.CreateExpense(expenseModel);
 
+            var inserted = await expenseRepository.UnitOfWork.CommitAsync();
+            if (!inserted)
+                throw new Exception("Failed to create expense!");
+            
             var expenseResponse = expenseDb.MapExpenseToResponseExpenseDto();
 
             return expenseResponse;
@@ -97,6 +101,10 @@ namespace MyExpenses.Services.Expense
             
             var updatedExpense = await expenseRepository.UpdateExpense(expenseExist);
             
+            var updated = await expenseRepository.UnitOfWork.CommitAsync();
+            if (!updated)
+                throw new Exception("Failed to update expense!");
+            
             var expenseResponse = updatedExpense.MapExpenseToResponseExpenseDto();
             return expenseResponse;
         }
@@ -105,6 +113,10 @@ namespace MyExpenses.Services.Expense
         {
             var expense = await expenseRepository.FindExpenseById(expenseId, userId) ??  throw new NotFoundException("Expense not found!");
             await expenseRepository.DeleteExpense(expense);
+            
+            var deleted = await expenseRepository.UnitOfWork.CommitAsync();
+            if (!deleted)
+                throw new Exception("Failed to delete expense!");
         }
     }
 }
