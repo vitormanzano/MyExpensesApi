@@ -31,13 +31,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.RequireHttpsMetadata = false;
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!)),
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            ClockSkew = TimeSpan.Zero
-        };
+        options.TokenValidationParameters = TokenHelpers.GetTokenValidationParameters(configuration: builder.Configuration);
     });
 
 builder.Services.AddHttpContextAccessor();
