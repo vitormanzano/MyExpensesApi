@@ -76,7 +76,10 @@ namespace MyExpenses.Services.Category
             var category = await categoryRepository.FindCategoryById(id) ?? throw new NotFoundException("Category not found!");
             category.SetName(name);
 
-            await categoryRepository.UpdateCategoryById(category);
+            categoryRepository.UpdateCategoryById(category);
+            var updated = await categoryRepository.UnitOfWork.CommitAsync();
+            if (!updated)
+                throw new Exception("Failed to update category!");
 
             var categoryResponse = category.MapCategoryToResponseCategoryDto();
             return categoryResponse;
@@ -87,7 +90,11 @@ namespace MyExpenses.Services.Category
             var category = await categoryRepository.FindCategoryById(categoryId) ?? throw new NotFoundException("Category not found!");
             
             VerifyIfExistExpensesInCategory(userId, category.Id);
-            await categoryRepository.DeleteCategory(category);
+            categoryRepository.DeleteCategory(category);
+            
+            var deleted = await categoryRepository.UnitOfWork.CommitAsync();
+            if (!deleted)
+                throw new Exception("Failed to delete category!");
         }
 
         public async Task DeleteCategoryByName(string name, Guid userId)
@@ -95,12 +102,16 @@ namespace MyExpenses.Services.Category
             var category = await categoryRepository.FindCategoryByName(name, userId) ?? throw new NotFoundException("Category not found!");
             
             VerifyIfExistExpensesInCategory(userId, category.Id);
-            await categoryRepository.DeleteCategory(category);
+            categoryRepository.DeleteCategory(category);
+            
+            var deleted = await categoryRepository.UnitOfWork.CommitAsync();
+            if (!deleted)
+                throw new Exception("Failed to delete category!");
         }
 
         private async void VerifyIfExistExpensesInCategory(Guid userId, Guid categoryId)
         {
-            var expenses = await expenseRepository.FindExpensesByCategory(userId, categoryId);
+            var expenses =  await expenseRepository.FindExpensesByCategory(userId, categoryId);
             
             if (expenses.Count != 0)
                 throw new ArgumentException("This category have expenses! Delete expenses first!");

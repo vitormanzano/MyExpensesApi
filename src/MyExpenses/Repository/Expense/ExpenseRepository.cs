@@ -7,9 +7,7 @@ namespace MyExpenses.Repository.Expense
 {
     public class ExpenseRepository(AppDbContext context) : IExpenseRepository
     {
-        private readonly AppDbContext _context = context;
-
-        public IUnitOfWork UnitOfWork => _context;
+        public IUnitOfWork UnitOfWork => context;
         
         public async Task<ExpenseModel> CreateExpense(ExpenseModel expense)
         {

@@ -1,15 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyExpenses.Data;
+using MyExpenses.Data.UnitOfWork;
 using MyExpenses.Models;
 
 namespace MyExpenses.Repository.Category
 {
     public class CategoryRepository(AppDbContext context) : ICategoryRepository
     {
+        public IUnitOfWork UnitOfWork => context;
+        
         public async Task CreateCategory(CategoryModel category)
         {
-            context.Categories.Add(category);
-            await context.SaveChangesAsync();
+            await context.Categories.AddAsync(category);
         }
 
         public async Task<List<CategoryModel>> FindAllCategoriesByUser(Guid userId)
@@ -60,18 +62,15 @@ namespace MyExpenses.Repository.Category
         }
 
 
-        public async Task<CategoryModel> UpdateCategoryById(CategoryModel category)
+        public CategoryModel UpdateCategoryById(CategoryModel category)
         {
             context.Categories.Update(category);
-            await context.SaveChangesAsync();
-
             return category;
         }
 
-        public async Task DeleteCategory(CategoryModel category)
+        public void DeleteCategory(CategoryModel category)
         {
             context.Categories.Remove(category);
-            await context.SaveChangesAsync();
         }
     }
 }
