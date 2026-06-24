@@ -1,45 +1,37 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace MyExpenses.ValueObjects
+namespace MyExpenses.ValueObjects;
+
+public sealed class EmailVo
 {
-    public class EmailVo
+    public string EmailAddress { get; } = null!;
+
+    private EmailVo() { }
+
+    public EmailVo(string emailAddress )
     {
-        public string EmailAddress { get; private set; }
+        ValidateEmail(emailAddress);
+        EmailAddress = emailAddress.Trim().ToLowerInvariant(); 
+    }
 
-        protected EmailVo() { }
+    private static void ValidateEmail(string emailAddress)
+    {
+        if (emailAddress.Length < 6)
+            throw new ArgumentException("Email must be at least 4 characters", nameof(emailAddress));
 
-        public EmailVo(string emailAddress )
-        {
-            SetEmail(emailAddress);
-        }
 
-        public void SetEmail(string emailAddress)
-        {
-            ValidateEmail(emailAddress);
-            EmailAddress = emailAddress; 
-        }
+        if (emailAddress.Length > 255)
+            throw new ArgumentException("Email address cannot exceed 255 characters", nameof(emailAddress));
 
-        private void ValidateEmail(string emailAddress)
-        {
-            switch (emailAddress.Length)
-            {
-                case < 4:
-                    throw new ArgumentException("Email must be at least 4 characters");
+        RegexEmailCheck(emailAddress);
+    }
 
-                case > 255:
-                    throw new ArgumentException("Email address cannot exceed 255 characters");
-            }
-
-            RegexEmailCheck(emailAddress);
-        }
-
-        private void RegexEmailCheck(string emailAddress)
-        {
-            var emailIsFormatted = Regex.IsMatch(emailAddress,
+    private static void RegexEmailCheck(string emailAddress)
+    {
+        var emailIsFormatted = Regex.IsMatch(emailAddress,
                 @"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$");
 
-            if (!emailIsFormatted)
-                throw new Exception("Email is not valid!");
-        }
+        if (!emailIsFormatted)
+            throw new ArgumentException("Email is not valid!", nameof(emailAddress));
     }
 }

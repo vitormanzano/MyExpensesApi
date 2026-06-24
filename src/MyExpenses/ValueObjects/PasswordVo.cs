@@ -1,60 +1,51 @@
 ﻿using System.Security.Cryptography;
-using Microsoft.AspNetCore.Identity;
 
-namespace MyExpenses.ValueObjects
+namespace MyExpenses.ValueObjects;
+
+public sealed class PasswordVo
 {
-    public class PasswordVo
+    public string PasswordValue { get; } = null!;
+
+    private const int SaltSize = 16;
+    private const int HashSize = 32;
+    private const int Iterations = 100_000;
+    private static readonly HashAlgorithmName Algorithm = HashAlgorithmName.SHA512;
+
+    private PasswordVo() { }
+
+    public PasswordVo(string passwordValue)
     {
-        public string PasswordValue { get; private set; }
+        ValidatePassword(passwordValue);
+        PasswordValue = HashPassword(passwordValue);
+    }
 
-        private const int SaltSize = 16;
-        private const int HashSize = 32;
-        private const int Iterations = 100000;
+    private static void ValidatePassword(string password)
+    {
+        if (string.IsNullOrWhiteSpace(password))
+            throw new ArgumentException("Password cannot be empty!", nameof(password));
 
-        private static readonly HashAlgorithmName Algorithm = HashAlgorithmName.SHA512;
+        if (password.Length < 4)
+            throw new ArgumentException("Password must be at least 4 characters");
 
-        protected PasswordVo() { }
+        if (password.Length > 255)
+            throw new ArgumentException("Password cannot exceed 255 characters");
+    }
 
-        public PasswordVo(string passwordValue)
-        {
-            SetPassword(passwordValue);
-        }
+    private static string HashPassword(string password)
+    {
+        byte[] salt = RandomNumberGenerator.GetBytes(SaltSize);
+        byte[] hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, Algorithm, HashSize);
 
-        public void SetPassword(string passwordValue)
-        {
-            ValidatePassword(passwordValue);
-            PasswordValue = EncryptPassword(passwordValue);
-        }
+        return $"{Convert.ToHexString(hash)}-{Convert.ToHexString(salt)}";
+    }
 
-        private void ValidatePassword(string password)
-        {
-            switch (password.Length)
-            {
-                case < 4:
-                    throw new ArgumentException("Password must be at least 4 characters");
+    public bool Verify(string password)
+    {
+        string[] parts = PasswordValue.Split('-');
+        byte[] hash = Convert.FromHexString(parts[0]);
+        byte[] salt = Convert.FromHexString(parts[1]);
+        byte[] inputHash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, Algorithm, HashSize);
 
-                case > 255:
-                    throw new ArgumentException("Password cannot exceed 255 characters");
-            }
-        }
-
-        private string EncryptPassword(string password)
-        {
-            byte[] salt = RandomNumberGenerator.GetBytes(SaltSize);
-            byte[] hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, Algorithm, HashSize);
-
-            return $"{Convert.ToHexString(hash)}-{Convert.ToHexString(salt)}";
-        }
-
-        public bool Verify(string password, string encryptedPassword)
-        {
-            string[] parts = encryptedPassword.Split('-');
-            byte[] hash = Convert.FromHexString(parts[0]);
-            byte[] salt = Convert.FromHexString(parts[1]);
-
-            byte[] inputHash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, Algorithm, HashSize);
-
-            return CryptographicOperations.FixedTimeEquals(hash, inputHash);
-        }
+        return CryptographicOperations.FixedTimeEquals(hash, inputHash);
     }
 }
