@@ -89,7 +89,7 @@ namespace MyExpenses.Services.Category
         {
             var category = await categoryRepository.FindCategoryById(categoryId) ?? throw new NotFoundException("Category not found!");
             
-            VerifyIfExistExpensesInCategory(userId, category.Id);
+            await  VerifyIfExistExpensesInCategory(userId, category.Id);
             categoryRepository.DeleteCategory(category);
             
             var deleted = await categoryRepository.UnitOfWork.CommitAsync();
@@ -101,7 +101,7 @@ namespace MyExpenses.Services.Category
         {
             var category = await categoryRepository.FindCategoryByName(name, userId) ?? throw new NotFoundException("Category not found!");
             
-            VerifyIfExistExpensesInCategory(userId, category.Id);
+            await VerifyIfExistExpensesInCategory(userId, category.Id);
             categoryRepository.DeleteCategory(category);
             
             var deleted = await categoryRepository.UnitOfWork.CommitAsync();
@@ -109,11 +109,11 @@ namespace MyExpenses.Services.Category
                 throw new Exception("Failed to delete category!");
         }
 
-        private async void VerifyIfExistExpensesInCategory(Guid userId, Guid categoryId)
+        private async Task VerifyIfExistExpensesInCategory(Guid userId, Guid categoryId)
         {
             var expenses =  await expenseRepository.FindExpensesByCategory(userId, categoryId);
             
-            if (expenses.Count != 0)
+            if (expenses.Any())
                 throw new ArgumentException("This category have expenses! Delete expenses first!");
         }
     }

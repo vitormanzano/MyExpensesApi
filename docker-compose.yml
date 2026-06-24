@@ -14,7 +14,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - my_expenses_data:/var/lib/postgresql/data
+      - my_expenses_data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 30s
