@@ -112,8 +112,8 @@ namespace MyExpenses.Controllers.User
         }
 
         [Authorize]
-        [HttpDelete("Delete/{password}")]
-        public async Task<IActionResult> Delete(string password)
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> Delete([FromBody] string password)
         {
             try
             {

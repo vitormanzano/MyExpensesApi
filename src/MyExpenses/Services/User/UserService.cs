@@ -38,7 +38,7 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
     {
         var user = await userRepository.FindUserByEmail(loginUserDto.Email) ?? throw new NotFoundException("User not found!");
 
-        var passwordMatches = user.Password.Verify(loginUserDto.Password, user.Password.PasswordValue);
+        var passwordMatches = user.Password.Verify(loginUserDto.Password);
 
         if (!passwordMatches)
             throw new ArgumentException("Wrong Password!");
@@ -87,7 +87,7 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
     {
         var user = await userRepository.FindUserByGuid(userId) ?? throw new NotFoundException("User not found!");
 
-        var passwordMatches = user.Password.Verify(password, user.Password.PasswordValue);
+        var passwordMatches = user.Password.Verify(password);
 
         if (!passwordMatches)
             throw new Exception("Wrong Password!");
