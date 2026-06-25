@@ -39,7 +39,7 @@ public sealed class PasswordVo
         return $"{Convert.ToHexString(hash)}-{Convert.ToHexString(salt)}";
     }
 
-    public bool Verify(string password)
+    public bool Verify(string plainTextPassword)
     {
         string[] parts = PasswordValue.Split('-');
 
@@ -48,7 +48,7 @@ public sealed class PasswordVo
 
         byte[] hash = Convert.FromHexString(parts[0]);
         byte[] salt = Convert.FromHexString(parts[1]);
-        byte[] inputHash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, Algorithm, HashSize);
+        byte[] inputHash = Rfc2898DeriveBytes.Pbkdf2(plainTextPassword, salt, Iterations, Algorithm, HashSize);
 
         return CryptographicOperations.FixedTimeEquals(hash, inputHash);
     }
