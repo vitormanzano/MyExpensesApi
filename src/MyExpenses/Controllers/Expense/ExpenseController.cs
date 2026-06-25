@@ -11,6 +11,7 @@ namespace MyExpenses.Controllers.Expense
     [ApiController]
     public class ExpenseController(IExpenseService expenseService, IUserContext userContext) : ControllerBase
     {
+        [Authorize]
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] CreateExpenseDto createExpenseDto)
         {
