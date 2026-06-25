@@ -23,6 +23,11 @@ namespace MyExpenses.Services.Category
             var categoryModel = new CategoryModel(createCategoryDto.Name, userId);
             await categoryRepository.CreateCategory(categoryModel);
 
+            var inserted = await categoryRepository.UnitOfWork.CommitAsync();
+
+            if (!inserted) 
+                throw new Exception("Could not create category!");
+
             var categoryFormatted = categoryModel.MapCategoryToResponseCategoryDto();
             return categoryFormatted;
         }

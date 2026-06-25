@@ -74,7 +74,6 @@ namespace MyExpenses.Repository.Expense
         public async Task<ExpenseModel> UpdateExpense(ExpenseModel expense)
         {
             context.Expenses.Update(expense);
-            await context.SaveChangesAsync();
 
             return expense;
         }
@@ -82,7 +81,6 @@ namespace MyExpenses.Repository.Expense
         public async Task DeleteExpense(ExpenseModel expense)
         {
             context.Expenses.Remove(expense);
-            await context.SaveChangesAsync();
         }
     }
 }

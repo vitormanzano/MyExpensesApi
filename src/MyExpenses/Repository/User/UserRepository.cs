@@ -35,7 +35,6 @@ public class UserRepository(AppDbContext context) : IUserRepository
     public async Task<UserModel> UpdateUser(UserModel user)
     {
         context.Users.Update(user);
-        await context.SaveChangesAsync();
 
         return user;
     }
@@ -43,6 +42,5 @@ public class UserRepository(AppDbContext context) : IUserRepository
     public async Task DeleteUser(UserModel user)
     {
         context.Users.Remove(user);
-        await context.SaveChangesAsync();
     }
 }
