@@ -21,7 +21,7 @@ namespace MyExpenses.Data
 
         public async Task<bool> CommitAsync()
         {
-            foreach (var entry in ChangeTracker.Entries().Where(entry => entry.State.GetType().GetProperty("CreatedAt") != null))
+            foreach (var entry in ChangeTracker.Entries().Where(entry => entry.Entity.GetType().GetProperty("CreatedAt") != null))
             {
                 if (entry.State == EntityState.Added)
                 {
