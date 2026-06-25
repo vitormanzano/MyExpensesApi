@@ -42,6 +42,10 @@ public sealed class PasswordVo
     public bool Verify(string password)
     {
         string[] parts = PasswordValue.Split('-');
+
+        if (parts.Length != 2)
+            throw new Exception("Password strange format.");
+
         byte[] hash = Convert.FromHexString(parts[0]);
         byte[] salt = Convert.FromHexString(parts[1]);
         byte[] inputHash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, Algorithm, HashSize);

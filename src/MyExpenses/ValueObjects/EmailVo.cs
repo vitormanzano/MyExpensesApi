@@ -17,7 +17,7 @@ public sealed class EmailVo
     private static void ValidateEmail(string emailAddress)
     {
         if (emailAddress.Length < 6)
-            throw new ArgumentException("Email must be at least 4 characters", nameof(emailAddress));
+            throw new ArgumentException("Email must be at least 6 characters", nameof(emailAddress));
 
 
         if (emailAddress.Length > 255)
