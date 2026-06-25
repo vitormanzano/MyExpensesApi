@@ -9,13 +9,12 @@ namespace MyExpenses.Repository.Expense
     {
         public IUnitOfWork UnitOfWork => context;
         
-        public async Task<ExpenseModel> CreateExpense(ExpenseModel expense)
+        public Task<ExpenseModel> CreateExpense(ExpenseModel expense)
         {
             var expenseDb = context.Expenses
                 .Add(expense);
-            await context.SaveChangesAsync();
 
-            return expenseDb.Entity;
+            return Task.FromResult(expenseDb.Entity);
         }
 
         public async Task<List<ExpenseModel>> FindAllExpenses(Guid userId)
