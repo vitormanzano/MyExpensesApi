@@ -6,6 +6,7 @@ using MyExpenses.Dtos.Common;
 using MyExpenses.Services.Category;
 using MyExpenses.Services.Exceptions;
 using MyExpenses.UserContext;
+using MyExpenses.Results;
 
 namespace MyExpenses.Controllers.Category
 {
@@ -17,170 +18,80 @@ namespace MyExpenses.Controllers.Category
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] CreateCategoryDto categoryDto)
         {
-            try
-            {
-                var userId = userContext.UserId;
+            var userId = userContext.UserId;
 
-                var category = await categoryService.CreateCategory(categoryDto, userId);
-                return Created("Category created!", category);
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    InvalidOperationException => Conflict(error: ex.Message),
-                    _ => BadRequest(ex.Message),
-                };
-            }
+            var result = await categoryService.CreateCategory(categoryDto, userId);
+            return result.Match(_ => Created(), error => error.ToActionResult(this));
         }
 
         [Authorize]
         [HttpGet("FindAllCategories")]
         public async Task<IActionResult> FindAllCategories()
         {
-            try
-            {
-                var userId = userContext.UserId;
+            var userId = userContext.UserId;
 
-                var categories = await categoryService.FindAllCategoriesByUser(userId);
-                return Ok(categories);
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    _ => BadRequest(ex.Message),
-                };
-            }
+            var result = await categoryService.FindAllCategoriesByUser(userId);
+            return result.Match(categories => Ok(categories), error => error.ToActionResult(this));
         }
         
         [Authorize]
         [HttpGet("FindAllCategoriesPaginated")]
         public async Task<IActionResult> FindAllCategories([FromQuery] PaginationDto paginationDto)
         {
-            try
-            {
-                var userId = userContext.UserId;
+            var userId = userContext.UserId;
 
-                var categories = await categoryService.FindAllCategoriesByUserPaginated(userId, paginationDto.Page, paginationDto.PageSize);
-                return Ok(categories);
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    _ => BadRequest(ex.Message),
-                };
-            }
+            var result = await categoryService.FindAllCategoriesByUserPaginated(userId, paginationDto.Page, paginationDto.PageSize);
+            return result.Match(categories => Ok(categories), error => error.ToActionResult(this));
         }
         
         [Authorize]
-        [HttpGet("FindCategoryById/{id}")]
+        [HttpGet("FindCategoryById/{categoryId}")]
         public async Task<IActionResult> FindCastegoryById(Guid categoryId)
         {
-            try
-            {
-                var category = await categoryService.FindCategoryById(categoryId);
-                return Ok(category);
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    NotFoundException => NotFound(ex.Message),
-                    _ => BadRequest(ex.Message),
-                };
-            }
+            var userId = userContext.UserId;
+
+            var result = await categoryService.FindCategoryById(categoryId);
+            return result.Match(category => Ok(category), error => error.ToActionResult(this));
         }
         
         [Authorize]
         [HttpGet("FindCategoryByName/{name}")]
         public async Task<IActionResult> FindCastegoryByName(string name)
         {
-            try
-            {
-                var userId = userContext.UserId;
-                
-                var category = await categoryService.FindCategoryByName(name, userId);
-                return Ok(category);
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    NotFoundException => NotFound(ex.Message),
-                    _ => BadRequest(ex.Message),
-                };
-            }
+            var userId = userContext.UserId;
+
+            var result = await categoryService.FindCategoryByName(name, userId);
+            return result.Match(category => Ok(category), error => error.ToActionResult(this));
         }
         
         [Authorize]
-        [HttpPatch("UpdateCategoryById/{id}")]
+        [HttpPatch("UpdateCategoryById/{categoryId}")]
         public async Task<IActionResult> UpdateCategoryById(Guid categoryId, [FromBody] string nameToUpdate)
         {
-            try
-            {
-                var category = await categoryService.UpdateCategoryById(categoryId, nameToUpdate);
-                return Ok(category);
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    NotFoundException => NotFound(ex.Message),
-                    _ => BadRequest(ex.Message),
-                };
-            }
+            var userId = userContext.UserId;
+
+            var result = await categoryService.UpdateCategoryById(categoryId, nameToUpdate);
+            return result.Match(category => Ok(category), error => error.ToActionResult(this));
         }
         
         [Authorize]
-        [HttpDelete("DeleteCategoryById/{id}")]
+        [HttpDelete("DeleteCategoryById/{categoryId}")]
         public async Task<IActionResult> DeleteCategoryById(Guid categoryId)
         {
-            try
-            {
-                var userId = userContext.UserId;
-                
-                await categoryService.DeleteCategoryById(userId, categoryId);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    NotFoundException => NotFound(ex.Message),
-                    _ => BadRequest(ex.Message),
-                };
-            }
+            var userId = userContext.UserId;
+
+            var result = await categoryService.DeleteCategoryById(userId, categoryId);
+            return result.Match(() => Ok(), error => error.ToActionResult(this));
         }
 
         [Authorize]
         [HttpDelete("DeleteCategoryByName/{name}")]
         public async Task<IActionResult> DeleteCategoryByName(string name)
         {
-            try
-            {
-                var userId = userContext.UserId;
-                
-                await categoryService.DeleteCategoryByName(name, userId);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    NotFoundException => NotFound(ex.Message),
-                    _ => BadRequest(ex.Message),
-                };
-            }
+            var userId = userContext.UserId;
+
+            var result = await categoryService.DeleteCategoryByName(name, userId);
+            return result.Match(() => Ok(), error => error.ToActionResult(this));
         }
     }
 }

@@ -5,20 +5,18 @@ using MyExpenses.Models;
 using MyExpenses.Repository.Category;
 using MyExpenses.Repository.Expense;
 using MyExpenses.Services.Exceptions;
+using MyExpenses.Results;
+using MyExpenses.Errors.Categories;
 
 namespace MyExpenses.Services.Category
 {
     public class CategoryService(ICategoryRepository categoryRepository,
                                  IExpenseRepository expenseRepository) : ICategoryService
     {
-        public async Task<ResponseCategoryDto> CreateCategory(CreateCategoryDto createCategoryDto, Guid userId)
+        public async Task<Result<ResponseCategoryDto>> CreateCategory(CreateCategoryDto createCategoryDto, Guid userId)
         {
             var existingCategory = await categoryRepository.FindCategoryByName(createCategoryDto.Name, userId);
-
-            if (existingCategory != null)
-            {
-                throw new ArgumentException("Category with this name already exists!");
-            }
+            if (existingCategory is not null) return CategoriesErrors.AlreadyExists;
             
             var categoryModel = new CategoryModel(createCategoryDto.Name, userId);
             await categoryRepository.CreateCategory(categoryModel);
@@ -26,27 +24,26 @@ namespace MyExpenses.Services.Category
             var inserted = await categoryRepository.UnitOfWork.CommitAsync();
 
             if (!inserted) 
-                throw new Exception("Could not create category!");
+                return CategoriesErrors.CreateFailed;
 
-            var categoryFormatted = categoryModel.MapCategoryToResponseCategoryDto();
-            return categoryFormatted;
+            return categoryModel.MapCategoryToResponseCategoryDto();
         }
 
-        public async Task<List<ResponseCategoryDto>> FindAllCategoriesByUser(Guid userId)
+        public async Task<Result<List<ResponseCategoryDto>>> FindAllCategoriesByUser(Guid userId)
         {
             var categories = await categoryRepository.FindAllCategoriesByUser(userId);
-            var categoriesResponse = categories.Select(x => x.MapCategoryToResponseCategoryDto()).ToList();
+            if (!categories.Any()) return CategoriesErrors.NotFound;
 
-            return categoriesResponse;
+            return categories.Select(x => x.MapCategoryToResponseCategoryDto()).ToList();
         }
 
-        public async Task<PagedResultDto<ResponseCategoryDto>> FindAllCategoriesByUserPaginated(Guid userId, int page, int pageSize)
+        public async Task<Result<PagedResultDto<ResponseCategoryDto>>> FindAllCategoriesByUserPaginated(Guid userId, int page, int pageSize)
         {
             var (categories, totalCount) = await categoryRepository.FindAllCategoriesByUserPaginated(userId, page, pageSize);
             
             var categoriesResponse = categories.Select(x => x.MapCategoryToResponseCategoryDto()).ToList();
             
-            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize); // Divide, cast to double the division,Ceiling round up the result and cast to int
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);             
             
             return new PagedResultDto<ResponseCategoryDto>
             {
@@ -60,66 +57,83 @@ namespace MyExpenses.Services.Category
             };
         }
 
-        public async Task<ResponseCategoryDto> FindCategoryById(Guid categoryId)
+        public async Task<Result<ResponseCategoryDto>> FindCategoryById(Guid categoryId)
         {
-            var category = await categoryRepository.FindCategoryById(categoryId) ?? throw new NotFoundException("Category not found!");
+            var category = await categoryRepository.FindCategoryById(categoryId); 
+            if (category is null) return CategoriesErrors.NotFound;
 
-            var categoryResponse = category.MapCategoryToResponseCategoryDto();
-            return categoryResponse;
+            return category.MapCategoryToResponseCategoryDto();
         }
 
-        public async Task<ResponseCategoryDto> FindCategoryByName(string name, Guid userId)
+        public async Task<Result<ResponseCategoryDto>> FindCategoryByName(string name, Guid userId)
         {
-            var category = await categoryRepository.FindCategoryByName(name, userId) ?? throw new NotFoundException("Category not found!");
+            var category = await categoryRepository.FindCategoryByName(name, userId);
+            if (category is null) return CategoriesErrors.NotFound;
 
-            var categoryResponse = category.MapCategoryToResponseCategoryDto();
-            return categoryResponse;
+            return category.MapCategoryToResponseCategoryDto();
+;
         }
 
-        public async Task<ResponseCategoryDto> UpdateCategoryById(Guid id, string name)
+        public async Task<Result<ResponseCategoryDto>> UpdateCategoryById(Guid id, string name)
         {
-            var category = await categoryRepository.FindCategoryById(id) ?? throw new NotFoundException("Category not found!");
+            var category = await categoryRepository.FindCategoryById(id);
+            if (category is null) return CategoriesErrors.NotFound;
+
             category.SetName(name);
 
             categoryRepository.UpdateCategoryById(category);
             var updated = await categoryRepository.UnitOfWork.CommitAsync();
             if (!updated)
-                throw new Exception("Failed to update category!");
+                return CategoriesErrors.UpdateFailed;
 
-            var categoryResponse = category.MapCategoryToResponseCategoryDto();
-            return categoryResponse;
+            return category.MapCategoryToResponseCategoryDto();
         }
         
-        public async Task DeleteCategoryById(Guid userId, Guid categoryId)
+        public async Task<Result> DeleteCategoryById(Guid userId, Guid categoryId)
         {
-            var category = await categoryRepository.FindCategoryById(categoryId) ?? throw new NotFoundException("Category not found!");
-            
-            await  VerifyIfExistExpensesInCategory(userId, category.Id);
+            var category = await categoryRepository.FindCategoryById(categoryId);             
+            if (category is null) return CategoriesErrors.NotFound;
+
+            var verify = await VerifyIfExistExpensesInCategory(userId, category.Id);
+            if (verify.isFailure)
+                return verify.Error;
+
             categoryRepository.DeleteCategory(category);
             
             var deleted = await categoryRepository.UnitOfWork.CommitAsync();
             if (!deleted)
-                throw new Exception("Failed to delete category!");
+                return CategoriesErrors.DeleteFailed;
+
+            return Result.Ok;
         }
 
-        public async Task DeleteCategoryByName(string name, Guid userId)
+        public async Task<Result> DeleteCategoryByName(string name, Guid userId)
         {
-            var category = await categoryRepository.FindCategoryByName(name, userId) ?? throw new NotFoundException("Category not found!");
-            
-            await VerifyIfExistExpensesInCategory(userId, category.Id);
+            var category = await categoryRepository.FindCategoryByName(name, userId);            
+            if (category is null) return CategoriesErrors.NotFound;
+
+            var verify = await VerifyIfExistExpensesInCategory(userId, category.Id);
+            if (verify.isFailure)
+                return verify.Error;
+
             categoryRepository.DeleteCategory(category);
             
             var deleted = await categoryRepository.UnitOfWork.CommitAsync();
             if (!deleted)
-                throw new Exception("Failed to delete category!");
+                return CategoriesErrors.DeleteFailed;
+
+            return Result.Ok;
         }
 
-        private async Task VerifyIfExistExpensesInCategory(Guid userId, Guid categoryId)
+        private async Task<Result> VerifyIfExistExpensesInCategory(Guid userId, Guid categoryId)
         {
             var expenses =  await expenseRepository.FindExpensesByCategory(userId, categoryId);
             
             if (expenses.Any())
-                throw new ArgumentException("This category have expenses! Delete expenses first!");
+                return CategoriesErrors.HasExpense;
+
+            return Result.Ok;
+                
         }
     }
 }

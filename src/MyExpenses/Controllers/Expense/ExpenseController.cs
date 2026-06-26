@@ -4,6 +4,7 @@ using MyExpenses.Dtos.Expense;
 using MyExpenses.Services.Exceptions;
 using MyExpenses.Services.Expense;
 using MyExpenses.UserContext;
+using MyExpenses.Results;
 
 namespace MyExpenses.Controllers.Expense
 {
@@ -15,176 +16,80 @@ namespace MyExpenses.Controllers.Expense
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] CreateExpenseDto createExpenseDto)
         {
-            try
-            {
-                var userId = userContext.UserId;
+            var userId = userContext.UserId;
 
-                await expenseService.CreateExpense(createExpenseDto, userId);
-                return Created();
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    ArgumentException => Conflict(ex.Message),
-                    _ => BadRequest(ex.Message)
-                };
-            }
+            var result = await expenseService.CreateExpense(createExpenseDto, userId);
+            return result.Match(_ => Created(), error => error.ToActionResult(this));
         }
 
         [Authorize]
         [HttpGet("FindAllExpensesByUser")]
         public async Task<IActionResult> FindAllExpensesByUser()
         {
-            try
-            {
-                var userId = userContext.UserId;
+            var userId = userContext.UserId;
 
-                var expenses = await expenseService.FindAllExpenses(userId);
-                return Ok(expenses);
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    _ => BadRequest(ex.Message)
-                };
-            }
+            var result = await expenseService.FindAllExpenses(userId);
+            return result.Match(expenses => Ok(expenses), error => error.ToActionResult(this));
         }
 
         [Authorize]
-        [HttpGet("FindExpenseById/{id}")]
+        [HttpGet("FindExpenseById/{expenseId}")]
         public async Task<IActionResult> FindExpenseById([FromRoute] Guid expenseId)
         {
-            try
-            {
-                var userId = userContext.UserId;
-                
-                var expenses = await expenseService.FindExpenseById(expenseId, userId);
-                return Ok(expenses);
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    NotFoundException => NotFound(ex.Message),
-                    _ => BadRequest(ex.Message)
-                };
-            }
+            var userId = userContext.UserId;
+
+            var result = await expenseService.FindExpenseById(expenseId, userId);
+            return result.Match(expense => Ok(expense), error => error.ToActionResult(this));
         }
         
         [Authorize]
         [HttpGet("FindExpensesByValue/{value}")]
         public async Task<IActionResult> FindExpensesByValue([FromRoute] decimal value)
         {
-            try
-            {
-                var userId = userContext.UserId;
+            var userId = userContext.UserId;
 
-                var expenses = await expenseService.FindExpensesByValue(userId, value);
-                return Ok(expenses);
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    NotFoundException => NotFound(ex.Message),
-                    _ => BadRequest(ex.Message)
-                };
-            }
+            var result = await expenseService.FindExpensesByValue(userId, value);
+            return result.Match(expense => Ok(expense), error => error.ToActionResult(this));
         }
         
         [Authorize]
         [HttpGet("FindExpensesByMonth")]
         public async Task<IActionResult> FindExpensesByMonth([FromQuery] int month, [FromQuery] int year)
         {
-            try
-            {
-                var userId = userContext.UserId;
-                var expenses = await expenseService.FindExpensesByMonth(userId, month, year);
+            var userId = userContext.UserId;
 
-                return Ok(expenses);
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    NotFoundException => NotFound(ex.Message),
-                    _ => BadRequest(ex.Message)
-                };
-            }
+            var result = await expenseService.FindExpensesByMonth(userId, month, year);
+            return result.Match(expense => Ok(expense), error => error.ToActionResult(this));
         }
 
         [Authorize]
         [HttpGet("FindExpenseByCategory/{categoryId}")]
         public async Task<IActionResult> FindExpenseByCategory([FromRoute] Guid categoryId)
         {
-            try
-            {
-                var userId = userContext.UserId;
-                
-                var expenses = await expenseService.FindExpensesByCategory(userId, categoryId);
-                return Ok(expenses);
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    NotFoundException => NotFound(ex.Message),
-                    _ => BadRequest(ex.Message)
-                };
-            }
+            var userId = userContext.UserId;
+
+            var result = await expenseService.FindExpensesByCategory(userId, categoryId);
+            return result.Match(expenses => Ok(expenses), error => error.ToActionResult(this));
         }
         
         [Authorize]
         [HttpPut("UpdateExpenseById")]
         public async Task<IActionResult> UpdateExpenseById([FromBody] UpdateExpenseDto updateExpenseDto)
         {
-            try
-            {
-                var userId = userContext.UserId;
-                
-                var updatedExpense = await expenseService.UpdateExpenseById(updateExpenseDto, userId);
-                return Ok(updatedExpense);
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    NotFoundException => NotFound(ex.Message),
-                    ArgumentException => Conflict(ex.Message),
-                    _ => BadRequest(ex.Message)
-                };
-            }
+            var userId = userContext.UserId;
+
+            var result = await expenseService.UpdateExpenseById(updateExpenseDto, userId);
+            return result.Match(expense => Ok(expense), error => error.ToActionResult(this));
         }
 
         [Authorize]
         [HttpDelete("DeleteExpenseById/{id}")]
         public async Task<IActionResult> DeleteExpenseById([FromRoute] Guid id)
         {
-            try
-            {
-                var userId = userContext.UserId;
-                
-                await expenseService.DeleteExpense(id, userId);
-                return Ok("Expense Deleted");
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    NotFoundException => NotFound(ex.Message),
-                    _ => BadRequest(ex.Message)
-                };
-            }
+            var userId = userContext.UserId;
+
+            var result = await expenseService.DeleteExpense(id, userId);
+            return result.Match(() => Ok(), error => error.ToActionResult(this));
         }
     }
 }

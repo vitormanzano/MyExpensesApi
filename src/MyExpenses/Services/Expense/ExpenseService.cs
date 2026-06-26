@@ -3,12 +3,14 @@ using MyExpenses.Mappers;
 using MyExpenses.Models;
 using MyExpenses.Repository.Expense;
 using MyExpenses.Services.Exceptions;
+using MyExpenses.Errors.Expenses;
+using MyExpenses.Results;
 
 namespace MyExpenses.Services.Expense
 {
     public class ExpenseService(IExpenseRepository expenseRepository) : IExpenseService
     {
-        public async Task<ResponseExpenseDto> CreateExpense(CreateExpenseDto createExpenseDto, Guid userId)
+        public async Task<Result<ResponseExpenseDto>> CreateExpense(CreateExpenseDto createExpenseDto, Guid userId)
         {
             var expenseModel = new ExpenseModel(
                 createExpenseDto.Value,
@@ -21,79 +23,72 @@ namespace MyExpenses.Services.Expense
 
             var inserted = await expenseRepository.UnitOfWork.CommitAsync();
             if (!inserted)
-                throw new Exception("Failed to create expense!");
+                return ExpenseErrors.CreateFailed;
             
-            var expenseResponse = expenseDb.MapExpenseToResponseExpenseDto();
-
-            return expenseResponse;
+            return expenseDb.MapExpenseToResponseExpenseDto();
         }
 
-        public async Task<List<ResponseExpenseDto>> FindAllExpenses(Guid userId)
+        public async Task<Result<List<ResponseExpenseDto>>> FindAllExpenses(Guid userId)
         {
             var expenses = await expenseRepository.FindAllExpenses(userId);
-
-            var expensesResponse = expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
-            return expensesResponse;
+            return expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
         }
 
-        public async Task<ResponseExpenseDto> FindExpenseById(Guid id, Guid userId)
+        public async Task<Result<ResponseExpenseDto>> FindExpenseById(Guid id, Guid userId)
         {
-            var expense = await expenseRepository.FindExpenseById(id, userId) ?? throw new NotFoundException("Expense not found!");
+            var expense = await expenseRepository.FindExpenseById(id, userId);
+            if (expense is null) return ExpenseErrors.NotFound;
             
-            var expenseResponse = expense.MapExpenseToResponseExpenseDto();
-            return expenseResponse;
+            return expense.MapExpenseToResponseExpenseDto();
         }
 
-        public async Task<List<ResponseExpenseDto>> FindExpensesByValue(Guid userId, decimal value)
+        public async Task<Result<List<ResponseExpenseDto>>> FindExpensesByValue(Guid userId, decimal value)
         {
             if (value <= 0)
-                throw new ArgumentException("Expense value must be greater than zero!");
+                return ExpenseErrors.ValueLowerThanZero;
 
             var expenses = await expenseRepository.FindExpensesByValue(userId, value);
             
-            if (expenses.Count == 0)
-                throw new NotFoundException("None expense was found!");
+            if (!expenses.Any())
+                return ExpenseErrors.NotFound;
             
-            var expensesResponse = expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
-            return expensesResponse;
+            return expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
         }
         
-        public async Task<List<ResponseExpenseDto>> FindExpensesByCategory(Guid userId, Guid categoryId)
+        public async Task<Result<List<ResponseExpenseDto>>> FindExpensesByCategory(Guid userId, Guid categoryId)
         {
             var expenses = await expenseRepository.FindExpensesByCategory(userId, categoryId);
             
-            if (expenses.Count == 0)
-                throw new NotFoundException("None expense was found!");
-            var expensesResponse = expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
-            return expensesResponse;
+            if (!expenses.Any())
+                return ExpenseErrors.NotFound;
+            return expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
         }
 
-        public async Task<List<ResponseExpenseDto>> FindExpensesByMonth(Guid userId, int month, int year)
+        public async Task<Result<List<ResponseExpenseDto>>> FindExpensesByMonth(Guid userId, int month, int year)
         {
             if (month < 1 || month > 12)
-                throw new ArgumentException("Month must be between 1 and 12!");
+                return ExpenseErrors.InvalidMonth;
             
             if (year < 1900 || year > DateTime.Now.Year + 10)
-                throw new ArgumentException("Invalid year!");
+                return ExpenseErrors.InvalidYear;
             
             var startDate = new DateOnly(year, month, 1);
             var endDate = startDate.AddMonths(1);
             
             var expenses = await expenseRepository.FindExpensesByDate(userId, startDate, endDate);
             
-            if (expenses.Count == 0)
-                throw new NotFoundException("None expense was found!");
+            if (!expenses.Any())
+                return ExpenseErrors.NotFound;
             
-            var expensesResponse = expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
-            return expensesResponse;
+            return expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
         }
 
-        public async Task<ResponseExpenseDto> UpdateExpenseById(UpdateExpenseDto updateExpenseDto, Guid userId)
+        public async Task<Result<ResponseExpenseDto>> UpdateExpenseById(UpdateExpenseDto updateExpenseDto, Guid userId)
         {
             var expenseExist = await expenseRepository.FindExpenseById(updateExpenseDto.ExpenseId, userId);
             
-            if (expenseExist == null) 
-                throw new NotFoundException("Expense not found!");
+            if (expenseExist is null) 
+                return ExpenseErrors.NotFound;
             
             expenseExist.SetValue(updateExpenseDto.Value);
             expenseExist.SetDate(updateExpenseDto.Date);
@@ -103,20 +98,23 @@ namespace MyExpenses.Services.Expense
             
             var updated = await expenseRepository.UnitOfWork.CommitAsync();
             if (!updated)
-                throw new Exception("Failed to update expense!");
+                return ExpenseErrors.UpdateFailed;
             
-            var expenseResponse = updatedExpense.MapExpenseToResponseExpenseDto();
-            return expenseResponse;
+            return updatedExpense.MapExpenseToResponseExpenseDto();
         }
 
-        public async Task DeleteExpense(Guid expenseId, Guid userId)
+        public async Task<Result> DeleteExpense(Guid expenseId, Guid userId)
         {
-            var expense = await expenseRepository.FindExpenseById(expenseId, userId) ??  throw new NotFoundException("Expense not found!");
+            var expense = await expenseRepository.FindExpenseById(expenseId, userId); 
+            if (expense is null) return ExpenseErrors.DeleteFailed;
+
             await expenseRepository.DeleteExpense(expense);
             
             var deleted = await expenseRepository.UnitOfWork.CommitAsync();
             if (!deleted)
-                throw new Exception("Failed to delete expense!");
+                return ExpenseErrors.DeleteFailed;
+
+            return Result.Ok;
         }
     }
 }

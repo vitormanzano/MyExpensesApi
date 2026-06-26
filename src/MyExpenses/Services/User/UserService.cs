@@ -5,22 +5,24 @@ using MyExpenses.Mappers;
 using MyExpenses.Models;
 using MyExpenses.Repository.User;
 using MyExpenses.Services.Exceptions;
+using MyExpenses.Results;
+using MyExpenses.Errors.Users;
 
 namespace MyExpenses.Services.User;
 
 public class UserService(IUserRepository userRepository, TokenProvider tokenProvider) : IUserService
 {
-    public async Task SignUp(SignUpUserDto signUpUserDto)
+    public async Task<Result> SignUp(SignUpUserDto signUpUserDto)
     {
         var userWithEmail = await userRepository.FindUserByEmail(signUpUserDto.Email);
 
         if (userWithEmail is not null)
-            throw new UserAlreadyExistsException("A user with this email already exists!");
+            return UsersErrors.EmailAlreadyExists;
 
         var userWithCpf = await userRepository.FindUserByCpf(signUpUserDto.Cpf);
 
         if (userWithCpf is not null)
-            throw new UserAlreadyExistsException("A user with this cpf already exists!");
+            return UsersErrors.CpfAlreadyExists;
 
         var user = new UserModel(
             signUpUserDto.Cpf,
@@ -31,45 +33,43 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
         var inserted = await userRepository.UnitOfWork.CommitAsync();
 
         if (!inserted) 
-            throw new Exception("Could not sign up user!");
+            return UsersErrors.SignUpFailed;
+        return Result.Ok;
     }
 
-    public async Task<string> Login(LoginUserDto loginUserDto)
+    public async Task<Result<string>> Login(LoginUserDto loginUserDto)
     {
-        var user = await userRepository.FindUserByEmail(loginUserDto.Email) ?? throw new NotFoundException("User not found!");
+        var user = await userRepository.FindUserByEmail(loginUserDto.Email);
+        if (user is null) return UsersErrors.NotFound;
 
         var passwordMatches = user.Password.Verify(loginUserDto.Password);
 
         if (!passwordMatches)
-            throw new ArgumentException("Wrong Password!");
+            return UsersErrors.CredentialsWrong;
 
-        var token = tokenProvider.Create(user);
-
-        return token;
+        return tokenProvider.Create(user);
     }
 
-    public async Task<ResponseUserDto> FindUserByEmail(string email)
+    public async Task<Result<ResponseUserDto>> FindUserByEmail(string email)
     {
-        var user = await userRepository.FindUserByEmail(email) ?? throw new NotFoundException("User not found!");
-        var userFormatted = user.MapUserToResponseUserDto();
+        var user = await userRepository.FindUserByEmail(email);
+        if (user is null) return UsersErrors.NotFound;
 
-        return userFormatted;
+        return user.MapUserToResponseUserDto();
     }
 
-    public async Task<ResponseUserDto> FindUserByCpf(string cpf)
+    public async Task<Result<ResponseUserDto>> FindUserByCpf(string cpf)
     {
-        var user = await userRepository.FindUserByCpf(cpf) ?? throw new NotFoundException("User not found!");
-        var userFormatted = user.MapUserToResponseUserDto();
+        var user = await userRepository.FindUserByCpf(cpf);
+        if (user is null) return UsersErrors.NotFound;
 
-        return userFormatted;
+        return user.MapUserToResponseUserDto();
     }
 
-    public async Task<UpdateUserDto> UpdateUserByGuid(UpdateUserDto updateUserDto, Guid userId)
+    public async Task<Result<UpdateUserDto>> UpdateUserByGuid(UpdateUserDto updateUserDto, Guid userId)
     {
         var user = await userRepository.FindUserByGuid(userId);
-
-        if (user is null)
-            throw new NotFoundException("User not found!");
+        if (user is null) return UsersErrors.NotFound;
 
         user.SetEmail(updateUserDto.Email);
         user.SetPassword(updateUserDto.Password);
@@ -78,24 +78,27 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
         
         var updated = await userRepository.UnitOfWork.CommitAsync();
         if (!updated)
-            throw new Exception("Could't update user");
+            return UsersErrors.UpdateFailed;
         
         return updateUserDto;
     }
 
-    public async Task DeleteUser(string password, Guid userId)
+    public async Task<Result> DeleteUser(string password, Guid userId)
     {
-        var user = await userRepository.FindUserByGuid(userId) ?? throw new NotFoundException("User not found!");
+        var user = await userRepository.FindUserByGuid(userId); 
+        if (user is null) return UsersErrors.NotFound;
 
         var passwordMatches = user.Password.Verify(password);
 
         if (!passwordMatches)
-            throw new Exception("Wrong Password!");
+            return UsersErrors.CredentialsWrong; 
         
         await userRepository.DeleteUser(user);
         
         var deleted = await userRepository.UnitOfWork.CommitAsync();
         if (!deleted)
-            throw new Exception("Couldn't delete user");
+            return UsersErrors.DeleteFailed;
+
+        return Result.Ok;
     }
 }

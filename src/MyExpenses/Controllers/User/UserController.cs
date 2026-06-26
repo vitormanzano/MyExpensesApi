@@ -5,6 +5,7 @@ using MyExpenses.Exceptions.User;
 using MyExpenses.Services.Exceptions;
 using MyExpenses.Services.User;
 using MyExpenses.UserContext;
+using MyExpenses.Results;
 
 namespace MyExpenses.Controllers.User
 {
@@ -15,122 +16,51 @@ namespace MyExpenses.Controllers.User
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUp([FromBody] SignUpUserDto user)
         {
-            try
-            {
-                await userService.SignUp(user);
-                return Created();
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UserAlreadyExistsException => Conflict(ex.Message),
-                    _ => BadRequest(ex.Message)
-                }; 
-            }
+            var result = await userService.SignUp(user);
+            return result.Match(() => Created(), error => error.ToActionResult(this));
         }
 
         [Authorize]
         [HttpGet("FindByEmail/{email}")]
         public async Task<IActionResult> FindUserByEmail(string email)
         {
-            try
-            {
-                var user = await userService.FindUserByEmail(email);
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    NotFoundException => NotFound(ex.Message),
-                    _ => BadRequest(ex.Message),
-                };
-            }
+            var result = await userService.FindUserByEmail(email);
+            return result.Match(value => Ok(value), error => error.ToActionResult(this));
         }
 
         [Authorize]
         [HttpGet("FindByCpf/{cpf}")]
         public async Task<IActionResult> FindUserByCpf(string cpf)
         {
-            try
-            {
-                var user = await userService.FindUserByCpf(cpf);
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    NotFoundException => NotFound(ex.Message),  
-                    _ => BadRequest(ex.Message),
-                };
-            }
+            var result = await userService.FindUserByCpf(cpf);
+            return result.Match(value => Ok(value), error => error.ToActionResult(this));
         }
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginUserDto loginUserDto)
         {
-            try
-            {
-                var token = await userService.Login(loginUserDto);
-                return Ok("Token: " + token);
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    NotFoundException => NotFound(ex.Message),
-                    ArgumentException => Conflict(ex.Message),
-                    _ => BadRequest(ex.Message)
-                };
-            }
+            var result = await userService.Login(loginUserDto);
+            return result.Match(token => Ok(new { token } ), error => error.ToActionResult(this));
         }
 
         [Authorize]
         [HttpPatch("Update")]
         public async Task<IActionResult> Update([FromBody] UpdateUserDto updateUserDto)
         {
-            try
-            {
-                var userId = userContext.UserId;
+            var userId = userContext.UserId;
 
-                var user = await userService.UpdateUserByGuid(updateUserDto, userId);
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    NotFoundException => NotFound(ex.Message),
-                    _ => BadRequest(ex.Message),
-                };
-            }
+            var result = await userService.UpdateUserByGuid(updateUserDto, userId);
+            return result.Match(value => Ok(value), error => error.ToActionResult(this));
         }
 
         [Authorize]
         [HttpDelete("Delete")]
         public async Task<IActionResult> Delete([FromBody] string password)
         {
-            try
-            {
-                var userId = userContext.UserId;
+            var userId = userContext.UserId;
 
-                await userService.DeleteUser(password, userId);
-                return Ok("User deleted!");
-            }
-            catch (Exception ex)
-            {
-                return ex switch
-                {
-                    UnauthorizedAccessException => Unauthorized(ex.Message),
-                    NotFoundException => NotFound(ex.Message),
-                    _ => BadRequest(ex.Message),
-                };
-            }
+            var result = await userService.DeleteUser(password, userId);
+            return result.Match(() => Ok(), error => error.ToActionResult(this));
         }
     }
 }

@@ -1,13 +1,14 @@
 using MyExpenses.Dtos.User;
+using MyExpenses.Results;
 
 namespace MyExpenses.Services.User;
 
 public interface IUserService
 {
-    Task SignUp(SignUpUserDto signUpUserDto);
-    Task<string> Login(LoginUserDto loginUserDto);
-    Task<ResponseUserDto> FindUserByEmail(string email);
-    Task<ResponseUserDto> FindUserByCpf(string cpf);
-    Task<UpdateUserDto> UpdateUserByGuid(UpdateUserDto updateUserDto, Guid userId);
-    Task DeleteUser(string password, Guid userId);
+    Task<Result> SignUp(SignUpUserDto signUpUserDto);
+    Task<Result<string>> Login(LoginUserDto loginUserDto);
+    Task<Result<ResponseUserDto>> FindUserByEmail(string email);
+    Task<Result<ResponseUserDto>> FindUserByCpf(string cpf);
+    Task<Result<UpdateUserDto>> UpdateUserByGuid(UpdateUserDto updateUserDto, Guid userId);
+    Task<Result> DeleteUser(string password, Guid userId);
 }

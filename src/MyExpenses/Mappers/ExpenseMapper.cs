@@ -12,7 +12,7 @@ namespace MyExpenses.Mappers
                 expense.Value,
                 expense.Description,
                 expense.Date,
-                expense.Category.Id);
+                expense.CategoryId);
 
             return expenseResponse;
         }
