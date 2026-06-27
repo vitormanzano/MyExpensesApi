@@ -50,7 +50,7 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
         return tokenProvider.Create(user);
     }
 
-    public async Task<Result<ResponseUserDto>> FindUserByEmail(string email)
+    public async Task<Result<ResponseUserDto>> FindByEmail(string email)
     {
         var user = await userRepository.FindByEmail(email);
         if (user is null) return UsersErrors.NotFound;
@@ -58,7 +58,7 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
         return user.MapUserToResponseUserDto();
     }
 
-    public async Task<Result<ResponseUserDto>> FindUserByCpf(string cpf)
+    public async Task<Result<ResponseUserDto>> FindByCpf(string cpf)
     {
         var user = await userRepository.FindByCpf(cpf);
         if (user is null) return UsersErrors.NotFound;
@@ -66,7 +66,7 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
         return user.MapUserToResponseUserDto();
     }
 
-    public async Task<Result<UpdateUserDto>> UpdateUserByGuid(UpdateUserDto updateUserDto, Guid userId)
+    public async Task<Result<UpdateUserDto>> UpdateByGuid(UpdateUserDto updateUserDto, Guid userId)
     {
         var user = await userRepository.FindByGuid(userId);
         if (user is null) return UsersErrors.NotFound;
@@ -83,7 +83,7 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
         return updateUserDto;
     }
 
-    public async Task<Result> DeleteUser(string password, Guid userId)
+    public async Task<Result> Delete(string password, Guid userId)
     {
         var user = await userRepository.FindByGuid(userId); 
         if (user is null) return UsersErrors.NotFound;

@@ -10,7 +10,7 @@ namespace MyExpenses.Services.Expense
 {
     public class ExpenseService(IExpenseRepository expenseRepository) : IExpenseService
     {
-        public async Task<Result<ResponseExpenseDto>> CreateExpense(CreateExpenseDto createExpenseDto, Guid userId)
+        public async Task<Result<ResponseExpenseDto>> Create(CreateExpenseDto createExpenseDto, Guid userId)
         {
             var expenseModel = new ExpenseModel(
                 createExpenseDto.Value,
@@ -28,13 +28,13 @@ namespace MyExpenses.Services.Expense
             return expenseDb.MapExpenseToResponseExpenseDto();
         }
 
-        public async Task<Result<List<ResponseExpenseDto>>> FindAllExpenses(Guid userId)
+        public async Task<Result<List<ResponseExpenseDto>>> FindAll(Guid userId)
         {
             var expenses = await expenseRepository.FindAll(userId);
             return expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
         }
 
-        public async Task<Result<ResponseExpenseDto>> FindExpenseById(Guid id, Guid userId)
+        public async Task<Result<ResponseExpenseDto>> FindById(Guid id, Guid userId)
         {
             var expense = await expenseRepository.FindById(id, userId);
             if (expense is null) return ExpenseErrors.NotFound;
@@ -42,7 +42,7 @@ namespace MyExpenses.Services.Expense
             return expense.MapExpenseToResponseExpenseDto();
         }
 
-        public async Task<Result<List<ResponseExpenseDto>>> FindExpensesByValue(Guid userId, decimal value)
+        public async Task<Result<List<ResponseExpenseDto>>> FindByValue(Guid userId, decimal value)
         {
             if (value <= 0)
                 return ExpenseErrors.ValueLowerThanZero;
@@ -55,7 +55,7 @@ namespace MyExpenses.Services.Expense
             return expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
         }
         
-        public async Task<Result<List<ResponseExpenseDto>>> FindExpensesByCategory(Guid userId, Guid categoryId)
+        public async Task<Result<List<ResponseExpenseDto>>> FindByCategory(Guid userId, Guid categoryId)
         {
             var expenses = await expenseRepository.FindByCategory(userId, categoryId);
             
@@ -64,7 +64,7 @@ namespace MyExpenses.Services.Expense
             return expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
         }
 
-        public async Task<Result<List<ResponseExpenseDto>>> FindExpensesByMonth(Guid userId, int month, int year)
+        public async Task<Result<List<ResponseExpenseDto>>> FindByMonth(Guid userId, int month, int year)
         {
             if (month < 1 || month > 12)
                 return ExpenseErrors.InvalidMonth;
@@ -83,7 +83,7 @@ namespace MyExpenses.Services.Expense
             return expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
         }
 
-        public async Task<Result<ResponseExpenseDto>> UpdateExpenseById(UpdateExpenseDto updateExpenseDto, Guid userId)
+        public async Task<Result<ResponseExpenseDto>> UpdateById(UpdateExpenseDto updateExpenseDto, Guid userId)
         {
             var expenseExist = await expenseRepository.FindById(updateExpenseDto.ExpenseId, userId);
             
@@ -103,7 +103,7 @@ namespace MyExpenses.Services.Expense
             return updatedExpense.MapExpenseToResponseExpenseDto();
         }
 
-        public async Task<Result> DeleteExpense(Guid expenseId, Guid userId)
+        public async Task<Result> Delete(Guid expenseId, Guid userId)
         {
             var expense = await expenseRepository.FindById(expenseId, userId); 
             if (expense is null) return ExpenseErrors.DeleteFailed;

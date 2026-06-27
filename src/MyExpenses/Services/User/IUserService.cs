@@ -7,8 +7,8 @@ public interface IUserService
 {
     Task<Result> SignUp(SignUpUserDto signUpUserDto);
     Task<Result<string>> Login(LoginUserDto loginUserDto);
-    Task<Result<ResponseUserDto>> FindUserByEmail(string email);
-    Task<Result<ResponseUserDto>> FindUserByCpf(string cpf);
-    Task<Result<UpdateUserDto>> UpdateUserByGuid(UpdateUserDto updateUserDto, Guid userId);
-    Task<Result> DeleteUser(string password, Guid userId);
+    Task<Result<ResponseUserDto>> FindByEmail(string email);
+    Task<Result<ResponseUserDto>> FindByCpf(string cpf);
+    Task<Result<UpdateUserDto>> UpdateByGuid(UpdateUserDto updateUserDto, Guid userId);
+    Task<Result> Delete(string password, Guid userId);
 }

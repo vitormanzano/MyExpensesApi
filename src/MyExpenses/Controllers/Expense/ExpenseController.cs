@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyExpenses.Dtos.Expense;
-using MyExpenses.Services.Exceptions;
 using MyExpenses.Services.Expense;
 using MyExpenses.UserContext;
 using MyExpenses.Results;
@@ -18,7 +17,7 @@ namespace MyExpenses.Controllers.Expense
         {
             var userId = userContext.UserId;
 
-            var result = await expenseService.CreateExpense(createExpenseDto, userId);
+            var result = await expenseService.Create(createExpenseDto, userId);
             return result.Match(_ => Created(), error => error.ToActionResult(this));
         }
 
@@ -28,7 +27,7 @@ namespace MyExpenses.Controllers.Expense
         {
             var userId = userContext.UserId;
 
-            var result = await expenseService.FindAllExpenses(userId);
+            var result = await expenseService.FindAll(userId);
             return result.Match(expenses => Ok(expenses), error => error.ToActionResult(this));
         }
 
@@ -38,7 +37,7 @@ namespace MyExpenses.Controllers.Expense
         {
             var userId = userContext.UserId;
 
-            var result = await expenseService.FindExpenseById(expenseId, userId);
+            var result = await expenseService.FindById(expenseId, userId);
             return result.Match(expense => Ok(expense), error => error.ToActionResult(this));
         }
         
@@ -48,7 +47,7 @@ namespace MyExpenses.Controllers.Expense
         {
             var userId = userContext.UserId;
 
-            var result = await expenseService.FindExpensesByValue(userId, value);
+            var result = await expenseService.FindByValue(userId, value);
             return result.Match(expense => Ok(expense), error => error.ToActionResult(this));
         }
         
@@ -58,7 +57,7 @@ namespace MyExpenses.Controllers.Expense
         {
             var userId = userContext.UserId;
 
-            var result = await expenseService.FindExpensesByMonth(userId, month, year);
+            var result = await expenseService.FindByMonth(userId, month, year);
             return result.Match(expense => Ok(expense), error => error.ToActionResult(this));
         }
 
@@ -68,7 +67,7 @@ namespace MyExpenses.Controllers.Expense
         {
             var userId = userContext.UserId;
 
-            var result = await expenseService.FindExpensesByCategory(userId, categoryId);
+            var result = await expenseService.FindByCategory(userId, categoryId);
             return result.Match(expenses => Ok(expenses), error => error.ToActionResult(this));
         }
         
@@ -78,7 +77,7 @@ namespace MyExpenses.Controllers.Expense
         {
             var userId = userContext.UserId;
 
-            var result = await expenseService.UpdateExpenseById(updateExpenseDto, userId);
+            var result = await expenseService.UpdateById(updateExpenseDto, userId);
             return result.Match(expense => Ok(expense), error => error.ToActionResult(this));
         }
 
@@ -88,7 +87,7 @@ namespace MyExpenses.Controllers.Expense
         {
             var userId = userContext.UserId;
 
-            var result = await expenseService.DeleteExpense(id, userId);
+            var result = await expenseService.Delete(id, userId);
             return result.Match(() => Ok(), error => error.ToActionResult(this));
         }
     }

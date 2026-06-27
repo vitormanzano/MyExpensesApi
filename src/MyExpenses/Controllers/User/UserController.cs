@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyExpenses.Dtos.User;
-using MyExpenses.Exceptions.User;
-using MyExpenses.Services.Exceptions;
 using MyExpenses.Services.User;
 using MyExpenses.UserContext;
 using MyExpenses.Results;
@@ -24,7 +22,7 @@ namespace MyExpenses.Controllers.User
         [HttpGet("FindByEmail/{email}")]
         public async Task<IActionResult> FindUserByEmail(string email)
         {
-            var result = await userService.FindUserByEmail(email);
+            var result = await userService.FindByEmail(email);
             return result.Match(value => Ok(value), error => error.ToActionResult(this));
         }
 
@@ -32,7 +30,7 @@ namespace MyExpenses.Controllers.User
         [HttpGet("FindByCpf/{cpf}")]
         public async Task<IActionResult> FindUserByCpf(string cpf)
         {
-            var result = await userService.FindUserByCpf(cpf);
+            var result = await userService.FindByCpf(cpf);
             return result.Match(value => Ok(value), error => error.ToActionResult(this));
         }
 
@@ -49,7 +47,7 @@ namespace MyExpenses.Controllers.User
         {
             var userId = userContext.UserId;
 
-            var result = await userService.UpdateUserByGuid(updateUserDto, userId);
+            var result = await userService.UpdateByGuid(updateUserDto, userId);
             return result.Match(value => Ok(value), error => error.ToActionResult(this));
         }
 
@@ -59,7 +57,7 @@ namespace MyExpenses.Controllers.User
         {
             var userId = userContext.UserId;
 
-            var result = await userService.DeleteUser(password, userId);
+            var result = await userService.Delete(password, userId);
             return result.Match(() => Ok(), error => error.ToActionResult(this));
         }
     }

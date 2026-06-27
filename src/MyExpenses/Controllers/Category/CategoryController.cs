@@ -1,10 +1,8 @@
-﻿using Humanizer;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyExpenses.Dtos.Category;
 using MyExpenses.Dtos.Common;
 using MyExpenses.Services.Category;
-using MyExpenses.Services.Exceptions;
 using MyExpenses.UserContext;
 using MyExpenses.Results;
 
@@ -20,7 +18,7 @@ namespace MyExpenses.Controllers.Category
         {
             var userId = userContext.UserId;
 
-            var result = await categoryService.CreateCategory(categoryDto, userId);
+            var result = await categoryService.Create(categoryDto, userId);
             return result.Match(_ => Created(), error => error.ToActionResult(this));
         }
 
@@ -30,7 +28,7 @@ namespace MyExpenses.Controllers.Category
         {
             var userId = userContext.UserId;
 
-            var result = await categoryService.FindAllCategoriesByUser(userId);
+            var result = await categoryService.FindAllByUser(userId);
             return result.Match(categories => Ok(categories), error => error.ToActionResult(this));
         }
         
@@ -40,7 +38,7 @@ namespace MyExpenses.Controllers.Category
         {
             var userId = userContext.UserId;
 
-            var result = await categoryService.FindAllCategoriesByUserPaginated(userId, paginationDto.Page, paginationDto.PageSize);
+            var result = await categoryService.FindAllByUserPaginated(userId, paginationDto.Page, paginationDto.PageSize);
             return result.Match(categories => Ok(categories), error => error.ToActionResult(this));
         }
         
@@ -50,7 +48,7 @@ namespace MyExpenses.Controllers.Category
         {
             var userId = userContext.UserId;
 
-            var result = await categoryService.FindCategoryById(categoryId);
+            var result = await categoryService.FindById(categoryId);
             return result.Match(category => Ok(category), error => error.ToActionResult(this));
         }
         
@@ -60,7 +58,7 @@ namespace MyExpenses.Controllers.Category
         {
             var userId = userContext.UserId;
 
-            var result = await categoryService.FindCategoryByName(name, userId);
+            var result = await categoryService.FindByName(name, userId);
             return result.Match(category => Ok(category), error => error.ToActionResult(this));
         }
         
@@ -70,7 +68,7 @@ namespace MyExpenses.Controllers.Category
         {
             var userId = userContext.UserId;
 
-            var result = await categoryService.UpdateCategoryById(categoryId, nameToUpdate);
+            var result = await categoryService.UpdateById(categoryId, nameToUpdate);
             return result.Match(category => Ok(category), error => error.ToActionResult(this));
         }
         
@@ -80,7 +78,7 @@ namespace MyExpenses.Controllers.Category
         {
             var userId = userContext.UserId;
 
-            var result = await categoryService.DeleteCategoryById(userId, categoryId);
+            var result = await categoryService.DeleteById(userId, categoryId);
             return result.Match(() => Ok(), error => error.ToActionResult(this));
         }
 
@@ -90,7 +88,7 @@ namespace MyExpenses.Controllers.Category
         {
             var userId = userContext.UserId;
 
-            var result = await categoryService.DeleteCategoryByName(name, userId);
+            var result = await categoryService.DeleteByName(name, userId);
             return result.Match(() => Ok(), error => error.ToActionResult(this));
         }
     }

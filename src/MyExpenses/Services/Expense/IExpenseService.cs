@@ -6,13 +6,13 @@ namespace MyExpenses.Services.Expense
 {
     public interface IExpenseService
     {
-        Task<Result<ResponseExpenseDto>> CreateExpense(CreateExpenseDto createExpenseDto, Guid UserId);
-        Task<Result<List<ResponseExpenseDto>>> FindAllExpenses(Guid userId);
-        Task<Result<ResponseExpenseDto>> FindExpenseById(Guid id, Guid userId);
-        Task<Result<List<ResponseExpenseDto>>> FindExpensesByValue(Guid userId, decimal value);
-        Task<Result<List<ResponseExpenseDto>>> FindExpensesByMonth(Guid userId, int month, int year);
-        Task<Result<List<ResponseExpenseDto>>> FindExpensesByCategory(Guid userId, Guid categoryId);
-        Task<Result<ResponseExpenseDto>> UpdateExpenseById(UpdateExpenseDto updateExpenseDto, Guid userId);
-        Task<Result> DeleteExpense(Guid expenseId, Guid userId);
+        Task<Result<ResponseExpenseDto>> Create(CreateExpenseDto createExpenseDto, Guid UserId);
+        Task<Result<List<ResponseExpenseDto>>> FindAll(Guid userId);
+        Task<Result<ResponseExpenseDto>> FindById(Guid id, Guid userId);
+        Task<Result<List<ResponseExpenseDto>>> FindByValue(Guid userId, decimal value);
+        Task<Result<List<ResponseExpenseDto>>> FindByMonth(Guid userId, int month, int year);
+        Task<Result<List<ResponseExpenseDto>>> FindByCategory(Guid userId, Guid categoryId);
+        Task<Result<ResponseExpenseDto>> UpdateById(UpdateExpenseDto updateExpenseDto, Guid userId);
+        Task<Result> Delete(Guid expenseId, Guid userId);
     }
 }

@@ -13,7 +13,7 @@ namespace MyExpenses.Services.Category
     public class CategoryService(ICategoryRepository categoryRepository,
                                  IExpenseRepository expenseRepository) : ICategoryService
     {
-        public async Task<Result<ResponseCategoryDto>> CreateCategory(CreateCategoryDto createCategoryDto, Guid userId)
+        public async Task<Result<ResponseCategoryDto>> Create(CreateCategoryDto createCategoryDto, Guid userId)
         {
             var existingCategory = await categoryRepository.FindByName(createCategoryDto.Name, userId);
             if (existingCategory is not null) return CategoriesErrors.AlreadyExists;
@@ -29,7 +29,7 @@ namespace MyExpenses.Services.Category
             return categoryModel.MapCategoryToResponseCategoryDto();
         }
 
-        public async Task<Result<List<ResponseCategoryDto>>> FindAllCategoriesByUser(Guid userId)
+        public async Task<Result<List<ResponseCategoryDto>>> FindAllByUser(Guid userId)
         {
             var categories = await categoryRepository.FindAllByUser(userId);
             if (!categories.Any()) return CategoriesErrors.NotFound;
@@ -37,7 +37,7 @@ namespace MyExpenses.Services.Category
             return categories.Select(x => x.MapCategoryToResponseCategoryDto()).ToList();
         }
 
-        public async Task<Result<PagedResultDto<ResponseCategoryDto>>> FindAllCategoriesByUserPaginated(Guid userId, int page, int pageSize)
+        public async Task<Result<PagedResultDto<ResponseCategoryDto>>> FindAllByUserPaginated(Guid userId, int page, int pageSize)
         {
             var (categories, totalCount) = await categoryRepository.FindAllByUserPaginated(userId, page, pageSize);
             
@@ -57,7 +57,7 @@ namespace MyExpenses.Services.Category
             };
         }
 
-        public async Task<Result<ResponseCategoryDto>> FindCategoryById(Guid categoryId)
+        public async Task<Result<ResponseCategoryDto>> FindById(Guid categoryId)
         {
             var category = await categoryRepository.FindById(categoryId); 
             if (category is null) return CategoriesErrors.NotFound;
@@ -65,7 +65,7 @@ namespace MyExpenses.Services.Category
             return category.MapCategoryToResponseCategoryDto();
         }
 
-        public async Task<Result<ResponseCategoryDto>> FindCategoryByName(string name, Guid userId)
+        public async Task<Result<ResponseCategoryDto>> FindByName(string name, Guid userId)
         {
             var category = await categoryRepository.FindByName(name, userId);
             if (category is null) return CategoriesErrors.NotFound;
@@ -74,7 +74,7 @@ namespace MyExpenses.Services.Category
 ;
         }
 
-        public async Task<Result<ResponseCategoryDto>> UpdateCategoryById(Guid id, string name)
+        public async Task<Result<ResponseCategoryDto>> UpdateById(Guid id, string name)
         {
             var category = await categoryRepository.FindById(id);
             if (category is null) return CategoriesErrors.NotFound;
@@ -89,7 +89,7 @@ namespace MyExpenses.Services.Category
             return category.MapCategoryToResponseCategoryDto();
         }
         
-        public async Task<Result> DeleteCategoryById(Guid userId, Guid categoryId)
+        public async Task<Result> DeleteById(Guid userId, Guid categoryId)
         {
             var category = await categoryRepository.FindById(categoryId);             
             if (category is null) return CategoriesErrors.NotFound;
@@ -107,7 +107,7 @@ namespace MyExpenses.Services.Category
             return Result.Ok;
         }
 
-        public async Task<Result> DeleteCategoryByName(string name, Guid userId)
+        public async Task<Result> DeleteByName(string name, Guid userId)
         {
             var category = await categoryRepository.FindByName(name, userId);            
             if (category is null) return CategoriesErrors.NotFound;
