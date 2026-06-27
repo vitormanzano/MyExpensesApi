@@ -9,12 +9,12 @@ namespace MyExpenses.Repository.Category
     {
         public IUnitOfWork UnitOfWork => context;
         
-        public async Task CreateCategory(CategoryModel category)
+        public async Task Create(CategoryModel category)
         {
             await context.Categories.AddAsync(category);
         }
 
-        public async Task<List<CategoryModel>> FindAllCategoriesByUser(Guid userId)
+        public async Task<List<CategoryModel>> FindAllByUser(Guid userId)
         {
             var categories = await context.Categories
                 .AsNoTracking()
@@ -25,7 +25,7 @@ namespace MyExpenses.Repository.Category
             return categories;
         }
 
-        public async Task<(List<CategoryModel> Categories, int TotalCount)> FindAllCategoriesByUserPaginated(Guid userId, int page, int pageSize)
+        public async Task<(List<CategoryModel> Categories, int TotalCount)> FindAllByUserPaginated(Guid userId, int page, int pageSize)
         {
             var query = context.Categories //Prepare the query to use
                 .AsNoTracking()
@@ -44,7 +44,7 @@ namespace MyExpenses.Repository.Category
             return (categories, totalCount);
         }
 
-        public async Task<CategoryModel> FindCategoryById(Guid categoryId)
+        public async Task<CategoryModel> FindById(Guid categoryId)
         {
             var category = await context.Categories
                 .AsNoTracking()
@@ -52,7 +52,7 @@ namespace MyExpenses.Repository.Category
             return category;
         }
         
-        public async Task<CategoryModel> FindCategoryByName(string name, Guid userId)
+        public async Task<CategoryModel> FindByName(string name, Guid userId)
         {
             var category = await context.Categories
                 .AsNoTracking()
@@ -62,13 +62,13 @@ namespace MyExpenses.Repository.Category
         }
 
 
-        public CategoryModel UpdateCategoryById(CategoryModel category)
+        public CategoryModel UpdateById(CategoryModel category)
         {
             context.Categories.Update(category);
             return category;
         }
 
-        public void DeleteCategory(CategoryModel category)
+        public void Delete(CategoryModel category)
         {
             context.Categories.Remove(category);
         }

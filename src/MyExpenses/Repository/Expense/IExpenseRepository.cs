@@ -6,13 +6,13 @@ namespace MyExpenses.Repository.Expense
     public interface IExpenseRepository
     {
         IUnitOfWork UnitOfWork { get; }
-        Task<ExpenseModel> CreateExpense(ExpenseModel expense);
-        Task<List<ExpenseModel>> FindAllExpenses(Guid userid);
-        Task<ExpenseModel> FindExpenseById(Guid id, Guid userId);
-        Task<List<ExpenseModel>> FindExpensesByValue(Guid userId, decimal value);
-        Task<List<ExpenseModel>> FindExpensesByDate(Guid userId, DateOnly startDate, DateOnly endDate);
-        Task<List<ExpenseModel>> FindExpensesByCategory(Guid userId, Guid categoryId);
-        Task<ExpenseModel> UpdateExpense(ExpenseModel expense);
-        Task DeleteExpense(ExpenseModel expense);
+        Task<ExpenseModel> Create(ExpenseModel expense);
+        Task<List<ExpenseModel>> FindAll(Guid userid);
+        Task<ExpenseModel> FindById(Guid id, Guid userId);
+        Task<List<ExpenseModel>> FindByValue(Guid userId, decimal value);
+        Task<List<ExpenseModel>> FindByDate(Guid userId, DateOnly startDate, DateOnly endDate);
+        Task<List<ExpenseModel>> FindByCategory(Guid userId, Guid categoryId);
+        Task<ExpenseModel> Update(ExpenseModel expense);
+        Task Delete(ExpenseModel expense);
     }
 }

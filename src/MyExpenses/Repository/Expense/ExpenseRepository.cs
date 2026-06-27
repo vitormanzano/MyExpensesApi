@@ -9,7 +9,7 @@ namespace MyExpenses.Repository.Expense
     {
         public IUnitOfWork UnitOfWork => context;
         
-        public Task<ExpenseModel> CreateExpense(ExpenseModel expense)
+        public Task<ExpenseModel> Create(ExpenseModel expense)
         {
             var expenseDb = context.Expenses
                 .Add(expense);
@@ -17,7 +17,7 @@ namespace MyExpenses.Repository.Expense
             return Task.FromResult(expenseDb.Entity);
         }
 
-        public async Task<List<ExpenseModel>> FindAllExpenses(Guid userId)
+        public async Task<List<ExpenseModel>> FindAll(Guid userId)
         {
             var expenses = await context.Expenses
                 .AsNoTracking()
@@ -28,7 +28,7 @@ namespace MyExpenses.Repository.Expense
             return expenses;
         }
 
-        public async Task<ExpenseModel> FindExpenseById(Guid id, Guid userId)
+        public async Task<ExpenseModel> FindById(Guid id, Guid userId)
         {
             var expense = await context.Expenses
                 .AsNoTracking()
@@ -37,7 +37,7 @@ namespace MyExpenses.Repository.Expense
             return expense;
         }
 
-        public async Task<List<ExpenseModel>> FindExpensesByValue(Guid userId, decimal value)
+        public async Task<List<ExpenseModel>> FindByValue(Guid userId, decimal value)
         {
             var expenses = await context.Expenses
                 .AsNoTracking()
@@ -49,7 +49,7 @@ namespace MyExpenses.Repository.Expense
             return expenses;
         }
 
-        public async Task<List<ExpenseModel>> FindExpensesByDate(Guid userId, DateOnly startDate, DateOnly endDate)
+        public async Task<List<ExpenseModel>> FindByDate(Guid userId, DateOnly startDate, DateOnly endDate)
         {
             var expenses = await context.Expenses
                 .AsNoTracking()
@@ -62,7 +62,7 @@ namespace MyExpenses.Repository.Expense
             return expenses;
         }
 
-        public async Task<List<ExpenseModel>> FindExpensesByCategory(Guid userId, Guid categoryId)
+        public async Task<List<ExpenseModel>> FindByCategory(Guid userId, Guid categoryId)
         {
             var expenses = await context.Expenses
                 .AsNoTracking()
@@ -71,14 +71,14 @@ namespace MyExpenses.Repository.Expense
             return expenses;
         }
 
-        public async Task<ExpenseModel> UpdateExpense(ExpenseModel expense)
+        public async Task<ExpenseModel> Update(ExpenseModel expense)
         {
             context.Expenses.Update(expense);
 
             return expense;
         }
 
-        public async Task DeleteExpense(ExpenseModel expense)
+        public async Task Delete(ExpenseModel expense)
         {
             context.Expenses.Remove(expense);
         }

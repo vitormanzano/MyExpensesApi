@@ -9,37 +9,37 @@ public class UserRepository(AppDbContext context) : IUserRepository
 {
     public IUnitOfWork UnitOfWork => context;
 
-    public async Task SignUpUser(UserModel user)
+    public async Task SignUp(UserModel user)
     {
         await context.Users.AddAsync(user);
     }
 
-    public async Task<UserModel> FindUserByGuid(Guid userId)
+    public async Task<UserModel> FindByGuid(Guid userId)
     {
         var user = await context.Users.FindAsync(userId);
         return user;
     }
 
-    public async Task<UserModel> FindUserByEmail(string email)
+    public async Task<UserModel> FindByEmail(string email)
     {
         var user = await context.Users.FirstOrDefaultAsync(u => u.Email.EmailAddress.Equals(email));
         return user;
     }
 
-    public async Task<UserModel> FindUserByCpf(string cpf)
+    public async Task<UserModel> FindByCpf(string cpf)
     {
         var user = await context.Users.FirstOrDefaultAsync(u => u.Cpf.Equals(cpf));
         return user;
     }
 
-    public async Task<UserModel> UpdateUser(UserModel user)
+    public async Task<UserModel> Update(UserModel user)
     {
         context.Users.Update(user);
 
         return user;
     }
 
-    public async Task DeleteUser(UserModel user)
+    public async Task Delete(UserModel user)
     {
         context.Users.Remove(user);
     }

@@ -14,12 +14,12 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
 {
     public async Task<Result> SignUp(SignUpUserDto signUpUserDto)
     {
-        var userWithEmail = await userRepository.FindUserByEmail(signUpUserDto.Email);
+        var userWithEmail = await userRepository.FindByEmail(signUpUserDto.Email);
 
         if (userWithEmail is not null)
             return UsersErrors.EmailAlreadyExists;
 
-        var userWithCpf = await userRepository.FindUserByCpf(signUpUserDto.Cpf);
+        var userWithCpf = await userRepository.FindByCpf(signUpUserDto.Cpf);
 
         if (userWithCpf is not null)
             return UsersErrors.CpfAlreadyExists;
@@ -29,7 +29,7 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
             signUpUserDto.Email,
             signUpUserDto.Password);
 
-        await userRepository.SignUpUser(user);
+        await userRepository.SignUp(user);
         var inserted = await userRepository.UnitOfWork.CommitAsync();
 
         if (!inserted) 
@@ -39,7 +39,7 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
 
     public async Task<Result<string>> Login(LoginUserDto loginUserDto)
     {
-        var user = await userRepository.FindUserByEmail(loginUserDto.Email);
+        var user = await userRepository.FindByEmail(loginUserDto.Email);
         if (user is null) return UsersErrors.NotFound;
 
         var passwordMatches = user.Password.Verify(loginUserDto.Password);
@@ -52,7 +52,7 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
 
     public async Task<Result<ResponseUserDto>> FindUserByEmail(string email)
     {
-        var user = await userRepository.FindUserByEmail(email);
+        var user = await userRepository.FindByEmail(email);
         if (user is null) return UsersErrors.NotFound;
 
         return user.MapUserToResponseUserDto();
@@ -60,7 +60,7 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
 
     public async Task<Result<ResponseUserDto>> FindUserByCpf(string cpf)
     {
-        var user = await userRepository.FindUserByCpf(cpf);
+        var user = await userRepository.FindByCpf(cpf);
         if (user is null) return UsersErrors.NotFound;
 
         return user.MapUserToResponseUserDto();
@@ -68,13 +68,13 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
 
     public async Task<Result<UpdateUserDto>> UpdateUserByGuid(UpdateUserDto updateUserDto, Guid userId)
     {
-        var user = await userRepository.FindUserByGuid(userId);
+        var user = await userRepository.FindByGuid(userId);
         if (user is null) return UsersErrors.NotFound;
 
         user.SetEmail(updateUserDto.Email);
         user.SetPassword(updateUserDto.Password);
 
-        await userRepository.UpdateUser(user);
+        await userRepository.Update(user);
         
         var updated = await userRepository.UnitOfWork.CommitAsync();
         if (!updated)
@@ -85,7 +85,7 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
 
     public async Task<Result> DeleteUser(string password, Guid userId)
     {
-        var user = await userRepository.FindUserByGuid(userId); 
+        var user = await userRepository.FindByGuid(userId); 
         if (user is null) return UsersErrors.NotFound;
 
         var passwordMatches = user.Password.Verify(password);
@@ -93,7 +93,7 @@ public class UserService(IUserRepository userRepository, TokenProvider tokenProv
         if (!passwordMatches)
             return UsersErrors.CredentialsWrong; 
         
-        await userRepository.DeleteUser(user);
+        await userRepository.Delete(user);
         
         var deleted = await userRepository.UnitOfWork.CommitAsync();
         if (!deleted)

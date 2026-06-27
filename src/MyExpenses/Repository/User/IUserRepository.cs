@@ -6,10 +6,10 @@ namespace MyExpenses.Repository.User;
 public interface IUserRepository
 {
     IUnitOfWork UnitOfWork { get; }
-    Task SignUpUser(UserModel user);
-    Task<UserModel> FindUserByGuid(Guid userId);
-    Task<UserModel> FindUserByEmail(string email);
-    Task<UserModel> FindUserByCpf(string cpf);
-    Task<UserModel> UpdateUser(UserModel user);
-    Task DeleteUser(UserModel user);
+    Task SignUp(UserModel user);
+    Task<UserModel> FindByGuid(Guid userId);
+    Task<UserModel> FindByEmail(string email);
+    Task<UserModel> FindByCpf(string cpf);
+    Task<UserModel> Update(UserModel user);
+    Task Delete(UserModel user);
 }

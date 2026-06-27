@@ -19,7 +19,7 @@ namespace MyExpenses.Services.Expense
                 userId,
                 createExpenseDto.CategoryId);
 
-            var expenseDb = await expenseRepository.CreateExpense(expenseModel);
+            var expenseDb = await expenseRepository.Create(expenseModel);
 
             var inserted = await expenseRepository.UnitOfWork.CommitAsync();
             if (!inserted)
@@ -30,13 +30,13 @@ namespace MyExpenses.Services.Expense
 
         public async Task<Result<List<ResponseExpenseDto>>> FindAllExpenses(Guid userId)
         {
-            var expenses = await expenseRepository.FindAllExpenses(userId);
+            var expenses = await expenseRepository.FindAll(userId);
             return expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
         }
 
         public async Task<Result<ResponseExpenseDto>> FindExpenseById(Guid id, Guid userId)
         {
-            var expense = await expenseRepository.FindExpenseById(id, userId);
+            var expense = await expenseRepository.FindById(id, userId);
             if (expense is null) return ExpenseErrors.NotFound;
             
             return expense.MapExpenseToResponseExpenseDto();
@@ -47,7 +47,7 @@ namespace MyExpenses.Services.Expense
             if (value <= 0)
                 return ExpenseErrors.ValueLowerThanZero;
 
-            var expenses = await expenseRepository.FindExpensesByValue(userId, value);
+            var expenses = await expenseRepository.FindByValue(userId, value);
             
             if (!expenses.Any())
                 return ExpenseErrors.NotFound;
@@ -57,7 +57,7 @@ namespace MyExpenses.Services.Expense
         
         public async Task<Result<List<ResponseExpenseDto>>> FindExpensesByCategory(Guid userId, Guid categoryId)
         {
-            var expenses = await expenseRepository.FindExpensesByCategory(userId, categoryId);
+            var expenses = await expenseRepository.FindByCategory(userId, categoryId);
             
             if (!expenses.Any())
                 return ExpenseErrors.NotFound;
@@ -75,7 +75,7 @@ namespace MyExpenses.Services.Expense
             var startDate = new DateOnly(year, month, 1);
             var endDate = startDate.AddMonths(1);
             
-            var expenses = await expenseRepository.FindExpensesByDate(userId, startDate, endDate);
+            var expenses = await expenseRepository.FindByDate(userId, startDate, endDate);
             
             if (!expenses.Any())
                 return ExpenseErrors.NotFound;
@@ -85,7 +85,7 @@ namespace MyExpenses.Services.Expense
 
         public async Task<Result<ResponseExpenseDto>> UpdateExpenseById(UpdateExpenseDto updateExpenseDto, Guid userId)
         {
-            var expenseExist = await expenseRepository.FindExpenseById(updateExpenseDto.ExpenseId, userId);
+            var expenseExist = await expenseRepository.FindById(updateExpenseDto.ExpenseId, userId);
             
             if (expenseExist is null) 
                 return ExpenseErrors.NotFound;
@@ -94,7 +94,7 @@ namespace MyExpenses.Services.Expense
             expenseExist.SetDate(updateExpenseDto.Date);
             expenseExist.SetCategoryId(updateExpenseDto.CategoryId);
             
-            var updatedExpense = await expenseRepository.UpdateExpense(expenseExist);
+            var updatedExpense = await expenseRepository.Update(expenseExist);
             
             var updated = await expenseRepository.UnitOfWork.CommitAsync();
             if (!updated)
@@ -105,10 +105,10 @@ namespace MyExpenses.Services.Expense
 
         public async Task<Result> DeleteExpense(Guid expenseId, Guid userId)
         {
-            var expense = await expenseRepository.FindExpenseById(expenseId, userId); 
+            var expense = await expenseRepository.FindById(expenseId, userId); 
             if (expense is null) return ExpenseErrors.DeleteFailed;
 
-            await expenseRepository.DeleteExpense(expense);
+            await expenseRepository.Delete(expense);
             
             var deleted = await expenseRepository.UnitOfWork.CommitAsync();
             if (!deleted)
