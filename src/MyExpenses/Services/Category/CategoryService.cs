@@ -4,7 +4,6 @@ using MyExpenses.Mappers;
 using MyExpenses.Models;
 using MyExpenses.Repository.Category;
 using MyExpenses.Repository.Expense;
-using MyExpenses.Services.Exceptions;
 using MyExpenses.Results;
 using MyExpenses.Errors.Categories;
 
@@ -15,15 +14,13 @@ namespace MyExpenses.Services.Category
     {
         public async Task<Result<ResponseCategoryDto>> Create(CreateCategoryDto createCategoryDto, Guid userId)
         {
-            var existingCategory = await categoryRepository.FindByName(createCategoryDto.Name, userId);
-            if (existingCategory is not null) return CategoriesErrors.AlreadyExists;
+            if (await categoryRepository.FindByName(createCategoryDto.Name, userId) is not null) 
+                return CategoriesErrors.AlreadyExists;
             
             var categoryModel = new CategoryModel(createCategoryDto.Name, userId);
             await categoryRepository.Create(categoryModel);
 
-            var inserted = await categoryRepository.UnitOfWork.CommitAsync();
-
-            if (!inserted) 
+            if (!await categoryRepository.UnitOfWork.CommitAsync()) 
                 return CategoriesErrors.CreateFailed;
 
             return categoryModel.MapCategoryToResponseCategoryDto();
@@ -71,7 +68,6 @@ namespace MyExpenses.Services.Category
             if (category is null) return CategoriesErrors.NotFound;
 
             return category.MapCategoryToResponseCategoryDto();
-;
         }
 
         public async Task<Result<ResponseCategoryDto>> UpdateById(Guid id, string name)
@@ -83,7 +79,7 @@ namespace MyExpenses.Services.Category
 
             categoryRepository.UpdateById(category);
             var updated = await categoryRepository.UnitOfWork.CommitAsync();
-            if (!updated)
+            if (!await categoryRepository.UnitOfWork.CommitAsync())
                 return CategoriesErrors.UpdateFailed;
 
             return category.MapCategoryToResponseCategoryDto();
@@ -100,8 +96,7 @@ namespace MyExpenses.Services.Category
 
             categoryRepository.Delete(category);
             
-            var deleted = await categoryRepository.UnitOfWork.CommitAsync();
-            if (!deleted)
+            if (!await categoryRepository.UnitOfWork.CommitAsync())
                 return CategoriesErrors.DeleteFailed;
 
             return Result.Ok;
@@ -118,8 +113,7 @@ namespace MyExpenses.Services.Category
 
             categoryRepository.Delete(category);
             
-            var deleted = await categoryRepository.UnitOfWork.CommitAsync();
-            if (!deleted)
+            if (!await categoryRepository.UnitOfWork.CommitAsync())
                 return CategoriesErrors.DeleteFailed;
 
             return Result.Ok;
@@ -133,7 +127,6 @@ namespace MyExpenses.Services.Category
                 return CategoriesErrors.HasExpense;
 
             return Result.Ok;
-                
         }
     }
 }
