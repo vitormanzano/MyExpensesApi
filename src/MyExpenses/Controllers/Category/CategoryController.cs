@@ -19,7 +19,7 @@ namespace MyExpenses.Controllers.Category
             var userId = userContext.UserId;
 
             var result = await categoryService.Create(categoryDto, userId);
-            return result.Match(_ => Created(), error => error.ToActionResult(this));
+            return result.Match(value => StatusCode(201, value), error => error.ToActionResult(this));
         }
 
         [Authorize]

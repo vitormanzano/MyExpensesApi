@@ -18,7 +18,7 @@ namespace MyExpenses.Controllers.Expense
             var userId = userContext.UserId;
 
             var result = await expenseService.Create(createExpenseDto, userId);
-            return result.Match(_ => Created(), error => error.ToActionResult(this));
+            return result.Match(value => StatusCode(201, value), error => error.ToActionResult(this));
         }
 
         [Authorize]

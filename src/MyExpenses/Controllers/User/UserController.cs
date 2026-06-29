@@ -15,7 +15,7 @@ namespace MyExpenses.Controllers.User
         public async Task<IActionResult> SignUp([FromBody] SignUpUserDto user)
         {
             var result = await userService.SignUp(user);
-            return result.Match(() => Created(), error => error.ToActionResult(this));
+            return result.Match(() => StatusCode(201), error => error.ToActionResult(this));
         }
 
         [Authorize]
