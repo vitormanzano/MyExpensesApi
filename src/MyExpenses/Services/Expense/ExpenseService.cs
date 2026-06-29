@@ -106,7 +106,7 @@ namespace MyExpenses.Services.Expense
         public async Task<Result> Delete(Guid expenseId, Guid userId)
         {
             var expense = await expenseRepository.FindById(expenseId, userId); 
-            if (expense is null) return ExpenseErrors.DeleteFailed;
+            if (expense is null) return ExpenseErrors.NotFound;
 
             await expenseRepository.Delete(expense);
             

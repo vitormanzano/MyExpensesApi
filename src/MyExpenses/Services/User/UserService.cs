@@ -1,10 +1,8 @@
 using MyExpenses.Dtos.User;
-using MyExpenses.Exceptions.User;
 using MyExpenses.Jwt;
 using MyExpenses.Mappers;
 using MyExpenses.Models;
 using MyExpenses.Repository.User;
-using MyExpenses.Services.Exceptions;
 using MyExpenses.Results;
 using MyExpenses.Errors.Users;
 
