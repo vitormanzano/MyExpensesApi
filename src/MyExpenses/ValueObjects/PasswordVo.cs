@@ -2,7 +2,7 @@
 
 namespace MyExpenses.ValueObjects;
 
-public sealed class PasswordVo
+public sealed class PasswordVo : IEquatable<PasswordVo>
 {
     public string PasswordValue { get; } = null!;
 
@@ -31,6 +31,24 @@ public sealed class PasswordVo
             throw new ArgumentException("Password cannot exceed 255 characters");
     }
 
+    public bool Equals(PasswordVo? other)
+    {
+        if (other is null) return false; 
+        if (ReferenceEquals(this, other)) return true;
+
+        return PasswordValue == other.PasswordValue;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return Equals(obj as PasswordVo);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(PasswordValue);
+    }
+
     private static string HashPassword(string password)
     {
         byte[] salt = RandomNumberGenerator.GetBytes(SaltSize);
@@ -52,4 +70,7 @@ public sealed class PasswordVo
 
         return CryptographicOperations.FixedTimeEquals(hash, inputHash);
     }
+
+    public static bool operator ==(PasswordVo? left, PasswordVo? right) => left?.Equals(right) ?? right is null;
+    public static bool operator !=(PasswordVo? left, PasswordVo? right) => !(left == right);
 }
