@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata;
-using MyExpenses.ValueObjects;
+﻿using MyExpenses.ValueObjects;
 
 namespace MyExpenses.Models
 {
@@ -9,8 +8,12 @@ namespace MyExpenses.Models
         public string Cpf { get; private set; } = string.Empty;
         public EmailVo Email { get; private set; } = null!;
         public PasswordVo Password { get; private set; } = null!;
-        public List<CategoryModel> Categories = [];
-        public List<ExpenseModel> Expenses = [];
+
+        private readonly List<CategoryModel> _categories = [];
+        public IReadOnlyList<CategoryModel> Categories => _categories;
+        
+        private readonly List<ExpenseModel> _expenses = [];
+        public IReadOnlyList<ExpenseModel> Expenses => _expenses;
         
         protected UserModel() { }
 
