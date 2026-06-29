@@ -2,7 +2,7 @@
 
 namespace MyExpenses.ValueObjects;
 
-public sealed class EmailVo
+public sealed class EmailVo : IEquatable<EmailVo>
 {
     public string EmailAddress { get; } = null!;
 
@@ -14,6 +14,24 @@ public sealed class EmailVo
         EmailAddress = emailAddress.Trim().ToLowerInvariant(); 
     }
 
+    public bool Equals(EmailVo? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+
+        return EmailAddress == other.EmailAddress;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return Equals(obj as EmailVo);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(EmailAddress);
+    }
+    
     private static void ValidateEmail(string emailAddress)
     {
         if (emailAddress.Length < 6)
@@ -34,4 +52,7 @@ public sealed class EmailVo
         if (!emailIsFormatted)
             throw new ArgumentException("Email is not valid!", nameof(emailAddress));
     }
+
+    public static bool operator ==(EmailVo? left, EmailVo? right) => left?.Equals(right) ?? right is null;
+    public static bool operator !=(EmailVo? left, EmailVo? right) => !(left == right);
 }
