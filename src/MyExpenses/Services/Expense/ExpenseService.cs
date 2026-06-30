@@ -2,12 +2,14 @@
 using MyExpenses.Mappers;
 using MyExpenses.Models;
 using MyExpenses.Repository.Expense;
+using MyExpenses.Repository.Category;
 using MyExpenses.Errors.Expenses;
+using MyExpenses.Errors.Categories;
 using MyExpenses.Results;
 
 namespace MyExpenses.Services.Expense
 {
-    public class ExpenseService(IExpenseRepository expenseRepository) : IExpenseService
+    public class ExpenseService(IExpenseRepository expenseRepository, ICategoryRepository categoryRepository) : IExpenseService
     {
         public async Task<Result<ResponseExpenseDto>> Create(CreateExpenseDto createExpenseDto, Guid userId)
         {
@@ -80,6 +82,9 @@ namespace MyExpenses.Services.Expense
             
             if (expenseExist is null) 
                 return ExpenseErrors.NotFound;
+
+            if ((await categoryRepository.FindById(updateExpenseDto.CategoryId)) is null)
+                return CategoriesErrors.NotFound; 
             
             expenseExist.SetValue(updateExpenseDto.Value);
             expenseExist.SetDate(updateExpenseDto.Date);
