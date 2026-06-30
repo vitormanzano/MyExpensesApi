@@ -24,6 +24,9 @@
 
         private void ValidateName(string name)
         {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentException("Name cannot be empty!");
+
             switch (name.Length)
             {
                 case < 4:
