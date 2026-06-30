@@ -18,7 +18,6 @@ namespace MyExpenses.Data.Configurations
             builder.HasOne(p => p.User)
                 .WithMany(u => u.Categories)
                 .HasForeignKey(p => p.UserId);
-                
         }
     }
 }

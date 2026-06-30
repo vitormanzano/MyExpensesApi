@@ -27,7 +27,9 @@ namespace MyExpenses.Data.Configurations
 
             builder.HasOne(p => p.Category)
                 .WithMany()
-                .HasForeignKey(p => p.CategoryId);
+                .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }
