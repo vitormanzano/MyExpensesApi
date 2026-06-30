@@ -2,7 +2,6 @@
 using MyExpenses.Mappers;
 using MyExpenses.Models;
 using MyExpenses.Repository.Expense;
-using MyExpenses.Services.Exceptions;
 using MyExpenses.Errors.Expenses;
 using MyExpenses.Results;
 
@@ -49,9 +48,6 @@ namespace MyExpenses.Services.Expense
 
             var expenses = await expenseRepository.FindByValue(userId, value);
             
-            if (!expenses.Any())
-                return ExpenseErrors.NotFound;
-            
             return expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
         }
         
@@ -59,8 +55,6 @@ namespace MyExpenses.Services.Expense
         {
             var expenses = await expenseRepository.FindByCategory(userId, categoryId);
             
-            if (!expenses.Any())
-                return ExpenseErrors.NotFound;
             return expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
         }
 
@@ -76,9 +70,6 @@ namespace MyExpenses.Services.Expense
             var endDate = startDate.AddMonths(1);
             
             var expenses = await expenseRepository.FindByDate(userId, startDate, endDate);
-            
-            if (!expenses.Any())
-                return ExpenseErrors.NotFound;
             
             return expenses.Select(x => x.MapExpenseToResponseExpenseDto()).ToList();
         }
