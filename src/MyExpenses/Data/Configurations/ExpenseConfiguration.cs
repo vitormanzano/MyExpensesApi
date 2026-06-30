@@ -25,7 +25,9 @@ namespace MyExpenses.Data.Configurations
                 .WithMany(u => u.Expenses)
                 .HasPrincipalKey(u => u.Id);
 
-            builder.HasOne(p => p.Category);
+            builder.HasOne(p => p.Category)
+                .WithMany()
+                .HasForeignKey(p => p.CategoryId);
         }
     }
 }

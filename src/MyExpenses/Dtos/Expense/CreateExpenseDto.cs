@@ -5,5 +5,4 @@
         string Description,
         DateOnly Date,
         Guid CategoryId);
-    
 }
