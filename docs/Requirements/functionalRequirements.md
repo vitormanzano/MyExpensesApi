@@ -1,7 +1,7 @@
 # Functional Requirements (FR)
 Description of the capabilities and actions users can perform in the MyExpenses system.
 
-  ### Authentication & User Management
+### Authentication & User Management
 * **FR01 (User Registration):** User should be able to register an account by providing Name, Email, CPF, and Password.
 * **FR02 (User Login):** User should be able to authenticate using Email and Password, receiving a JWT Bearer token.
 * **FR03 (Profile Management):** User should be able to view and update their profile information.
